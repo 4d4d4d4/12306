@@ -1,7 +1,7 @@
 server:
   port: 6001
   servlet:
-    context-path: member/
+    context-path: /member/
 logging:
   level:
     root: info
