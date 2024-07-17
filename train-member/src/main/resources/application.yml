@@ -1,7 +1,16 @@
 server:
-  port: 6001
+  port: 5001
   servlet:
     context-path: /member/
 logging:
   level:
     root: info
+    com.train.member.mapper: trace
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: train
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/member?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
