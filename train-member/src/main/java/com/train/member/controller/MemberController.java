@@ -18,7 +18,7 @@ public class MemberController {
     private MemberService memberService;
 
     @RequestMapping("count")
-    public String count(){
-        return memberService.count() + "";
+    public int count(){
+        return memberService.count();
     }
 }

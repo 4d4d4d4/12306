@@ -17,8 +17,9 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private MemberMapper memberMapper;
 
+
     @Override
     public int count() {
-        return memberMapper.count();
+        return Math.toIntExact(memberMapper.countByExample(null));
     }
 }
