@@ -1,5 +1,7 @@
 package com.train.member.service;
 
+import com.train.member.entity.Member;
+
 /**
  * @Classname MemberService
  * @Description 什么也没有写哦~
@@ -8,4 +10,6 @@ package com.train.member.service;
  */
 public interface MemberService {
     int count();
+
+    Long register(Member member);
 }

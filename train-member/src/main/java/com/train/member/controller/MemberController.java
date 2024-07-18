@@ -1,7 +1,10 @@
 package com.train.member.controller;
 
+import com.train.member.entity.Member;
 import com.train.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,8 +20,13 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
-    @RequestMapping("count")
+    @RequestMapping("/count")
     public int count(){
         return memberService.count();
+    }
+
+    @RequestMapping("/register")
+    public Long register(@Validated @RequestBody Member member){
+        return memberService.register(member);
     }
 }

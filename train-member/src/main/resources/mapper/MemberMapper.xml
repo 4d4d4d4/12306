@@ -100,17 +100,17 @@
     insert into member (id, mobile)
     values (#{id,jdbcType=BIGINT}, #{mobile,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.train.member.entity.Member">
+  <insert id="insertSelective" keyProperty="id" useGeneratedKeys="true" parameterType="com.train.member.entity.Member">
     insert into member
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="mobile != null">
-        mobile,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    <if test="id != null">
+      id,
+    </if>
+    <if test="mobile != null">
+      mobile,
+    </if>
+  </trim>
+  <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>

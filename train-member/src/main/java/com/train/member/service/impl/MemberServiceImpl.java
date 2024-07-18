@@ -1,5 +1,9 @@
 package com.train.member.service.impl;
 
+import com.train.common.resp.enmus.ResultStatusEnum;
+import com.train.common.resp.exception.BusinessException;
+import com.train.member.entity.Member;
+import com.train.member.entity.MemberExample;
 import com.train.member.mapper.MemberMapper;
 import com.train.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +25,21 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public int count() {
         return Math.toIntExact(memberMapper.countByExample(null));
+    }
+
+    @Override
+    public Long register(Member member) {
+        MemberExample memberExample = new MemberExample();
+        MemberExample.Criteria criteria = memberExample.createCriteria().andMobileEqualTo(member.getMobile());
+        long mobileCount = memberMapper.countByExample(memberExample);
+        if(mobileCount > 0){
+            throw new BusinessException(ResultStatusEnum.CODE_601);
+        }
+        Member registerMember = new Member();
+        long id = System.currentTimeMillis();
+        registerMember.setId(id);
+        registerMember.setMobile(member.getMobile());
+        memberMapper.insertSelective(registerMember);
+        return id;
     }
 }
