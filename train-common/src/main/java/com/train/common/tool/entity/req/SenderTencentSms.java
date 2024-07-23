@@ -96,7 +96,7 @@ public class SenderTencentSms {
             httpResponse.setJson(SendSmsResponse.toJsonString(sendSmsResponse)); // 具体的成功失败体现在这里
             SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
             for (SendStatus sendStatus : sendStatusSet) {
-                if (!Objects.equals(sendStatus.getCode(), "OK")) {
+                if (!Objects.equals(sendStatus.getCode(), "Ok")) {
                     log.info("手机号为：{}的短信发送失败, 错误消息：{}", mobile, sendStatus.getMessage());
                 } else {
                     log.info("手机号为：{}的短信发送成功", mobile);

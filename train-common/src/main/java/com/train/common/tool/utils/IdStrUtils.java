@@ -2,6 +2,7 @@ package com.train.common.tool.utils;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,8 +39,8 @@ public class IdStrUtils {
     public Long snowFlakeLong() {
         return snowflake.nextId();
     }
-    public static String checkCodeUUId(){
-        return UUID.randomUUID().toString().replace("-","").substring(0,4);
+    public static String checkIntegerCode(){
+        return RandomUtil.randomNumbers(5);
     }
 
 }
