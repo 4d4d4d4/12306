@@ -1,6 +1,7 @@
 package com.train.member.service;
 
-import com.train.member.entity.Member;
+import com.train.member.entity.dto.MemberDto;
+import com.train.member.entity.vo.Member;
 
 /**
  * @Classname MemberService
@@ -12,4 +13,6 @@ public interface MemberService {
     int count();
 
     Long register(Member member);
+
+    MemberDto registerOrLoginMember(String mobile);
 }

@@ -1,11 +1,13 @@
 package com.train.common.aspect;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.spring.PropertyPreFilters;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -60,10 +62,10 @@ public class LogCommonAspect {
             remoteAddr = request.getRemoteAddr();
         }
 
-        logger.info("请求地址：{}{}", requestURL, method);
+        logger.info("请求地址：{},  请求类型:{}", requestURL, method);
 
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-        String name = signature.getMethod().getName();
+        Signature signature =  pjp.getSignature();
+        String name = signature.getName();
         logger.info("请求方法名:{}", name);
         logger.info("访客地址:{}", remoteAddr);
 
@@ -80,14 +82,21 @@ public class LogCommonAspect {
             arguments[argIndex++] = arg;
         }
         // 过滤敏感信息
-        String[] excludeProperties = {};
+        String[] excludeProperties = {"reference"};
         PropertyPreFilters filters = new PropertyPreFilters();
         PropertyPreFilters.MySimplePropertyPreFilter argumentPropertyPreFilter = filters.addFilter(excludeProperties);
-//        logger.info("接收到的参数是：{}", JSONObject.toJSONString(arguments, argumentPropertyPreFilter));
 
+        // 设置 JSON 序列化选项
+        String jsonString = JSONObject.toJSONString(arguments, argumentPropertyPreFilter,
+                SerializerFeature.DisableCircularReferenceDetect, // 禁用循环引用检测
+                SerializerFeature.PrettyFormat); // 格式化输出
+        logger.info("接收到的参数：{}", jsonString);
         Object proceed = pjp.proceed();
 
-//        logger.info("返回的数据是：{}", JSONObject.toJSONString(proceed, argumentPropertyPreFilter));
+        String result = JSONObject.toJSONString(proceed, argumentPropertyPreFilter,
+                SerializerFeature.DisableCircularReferenceDetect, // 禁用循环引用检测
+                SerializerFeature.PrettyFormat); // 格式化输出
+        logger.info("返回的数据是：{}", result);
         logger.info("程序运行时间为:{}ms", (System.currentTimeMillis() - startTime));
         return proceed;
     }

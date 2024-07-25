@@ -1,4 +1,4 @@
-package com.train.common.tool.entity.config;
+package com.train.common.entity.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

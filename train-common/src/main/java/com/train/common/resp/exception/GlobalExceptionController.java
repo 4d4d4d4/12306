@@ -30,7 +30,6 @@ public class GlobalExceptionController {
     // 无请求处理器异常
     @ExceptionHandler(value = Exception.class)
     public Result Exception(Exception e, HttpServletRequest request) {
-        System.out.println(1);
         Result error = Result.error();
         if (e instanceof NoHandlerFoundException) {
             // 路径参数错误

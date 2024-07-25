@@ -1,4 +1,4 @@
-package com.train.member.entity;
+package com.train.member.entity.vo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

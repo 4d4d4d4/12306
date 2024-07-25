@@ -1,11 +1,8 @@
-package com.train.common.tool.utils;
+package com.train.common.utils;
 
-import cn.hutool.db.Page;
-import cn.hutool.json.JSONObject;
 import com.train.common.resp.enmus.ResultStatusEnum;
 import com.train.common.resp.exception.BusinessException;
-import com.train.common.tool.entity.HttpResponse;
-import org.apache.http.HttpEntity;
+import com.train.common.entity.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;

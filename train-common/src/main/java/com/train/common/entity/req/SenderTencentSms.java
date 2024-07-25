@@ -1,4 +1,4 @@
-package com.train.common.tool.entity.req;
+package com.train.common.entity.req;
 
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
@@ -8,10 +8,10 @@ import com.tencentcloudapi.sms.v20210111.models.SendSmsRequest;
 import com.tencentcloudapi.sms.v20210111.SmsClient;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
 import com.tencentcloudapi.sms.v20210111.models.SendStatus;
+import com.train.common.entity.HttpResponse;
+import com.train.common.entity.config.TencentConfig;
 import com.train.common.resp.enmus.ResultStatusEnum;
 import com.train.common.resp.exception.BusinessException;
-import com.train.common.tool.entity.HttpResponse;
-import com.train.common.tool.entity.config.TencentConfig;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

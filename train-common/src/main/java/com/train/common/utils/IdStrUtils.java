@@ -1,4 +1,4 @@
-package com.train.common.tool.utils;
+package com.train.common.utils;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;

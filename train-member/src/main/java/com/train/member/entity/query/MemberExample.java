@@ -1,4 +1,4 @@
-package com.train.member.entity;
+package com.train.member.entity.query;
 
 import java.util.ArrayList;
 import java.util.List;

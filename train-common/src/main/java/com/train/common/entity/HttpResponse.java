@@ -1,4 +1,4 @@
-package com.train.common.tool.entity;
+package com.train.common.entity;
 
 import lombok.Data;
 import lombok.Getter;

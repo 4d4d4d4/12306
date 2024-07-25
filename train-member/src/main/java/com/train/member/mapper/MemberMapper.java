@@ -1,7 +1,7 @@
 package com.train.member.mapper;
 
-import com.train.member.entity.Member;
-import com.train.member.entity.MemberExample;
+import com.train.member.entity.vo.Member;
+import com.train.member.entity.query.MemberExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
