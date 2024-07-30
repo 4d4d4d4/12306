@@ -133,4 +133,8 @@ public class JwtUtil {
         return claims;
     }
 
+    public static Long getMemberId(String token){
+        Claims claims = parseJWT(token);
+        return (Long) claims.get("memberId");
+    }
 }

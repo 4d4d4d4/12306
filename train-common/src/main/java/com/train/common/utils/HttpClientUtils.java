@@ -102,7 +102,6 @@ public class HttpClientUtils {
             UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(basicNameValuePairList, StandardCharsets.UTF_8);
             httpPost.setEntity(urlEncodedFormEntity);
 
-            System.out.println(new StringEntity(EntityUtils.toString(urlEncodedFormEntity)));
 
             HttpResponse result = httpClient.execute(httpPost, response -> {
                 InputStream content = response.getEntity().getContent();

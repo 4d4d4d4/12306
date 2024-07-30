@@ -61,7 +61,7 @@ public class MemberController {
      * @param response
      * @param type     验证码类型 用于 0.登录/注册
      */
-    @RequestMapping("/checkCode")
+    @RequestMapping(value = "/checkCode", produces = {"image/jpeg"})
     public void checkCode(HttpServletResponse response, HttpSession session, String type) {
         CreateImageCode createImageCode = new CreateImageCode(130, 30, 5, 10);
         response.setHeader("Pragma", "no-cache");
@@ -71,10 +71,9 @@ public class MemberController {
 
         String code = createImageCode.getCode();
         String sessionId = session.getId();
-        System.out.println(sessionId);
         try {
-            createImageCode.write(response.getOutputStream());
             redisUtils.setEx(RedisEnums.CHECK_CODE_ENUM.getPrefix() + sessionId + type, code, RedisEnums.CHECK_CODE_ENUM.getTime() * 10);
+            createImageCode.write(response.getOutputStream());
         } catch (IOException e) {
             log.info("验证码写入失败：{}", e.getMessage());
             throw new BusinessException(ResultStatusEnum.CODE_500.getCode(), "验证码异常，请联系管理员");
@@ -143,10 +142,12 @@ public class MemberController {
         String mobileSms = login.getMobileSms();
         String sessionId = session.getId();
         String redisCheckCode = (String) redisUtils.get(RedisEnums.CHECK_CODE_ENUM.getPrefix() + sessionId + type);
+        // 删除使用过的验证码
+        redisUtils.remove(RedisEnums.CHECK_CODE_ENUM.getPrefix() + sessionId + type);
         if ((redisCheckCode == null) || !redisCheckCode.equalsIgnoreCase(checkCode)) {
             throw new BusinessException(ResultStatusEnum.CODE_505);
         }
-//
+//          手机验证码校验目前省略掉
 //        String key = RedisEnums.MOBILE_SMS_ENUM.getPrefix() + mobile;
 //        RedisMobileSms redisMobileSms = (RedisMobileSms) redisUtils.get(key);
 //        if(redisMobileSms == null){
