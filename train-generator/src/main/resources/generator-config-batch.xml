@@ -41,6 +41,6 @@
                              targetPackage="com.train.batch.mapper"
                              type="XMLMAPPER"/>
 
-        <table tableName="batch" domainObjectName="Batch"/>
+<!--        <table tableName="batch" domainObjectName="Batch"/>-->
     </context>
 </generatorConfiguration>
