@@ -1,15 +1,16 @@
 package com.train.member.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import com.train.common.base.entity.domain.Member;
+import com.train.common.base.entity.dto.MemberDto;
+import com.train.common.base.entity.query.MemberExample;
+import com.train.common.base.service.MemberService;
 import com.train.common.resp.enmus.ResultStatusEnum;
 import com.train.common.resp.exception.BusinessException;
 import com.train.common.utils.IdStrUtils;
 import com.train.common.utils.JwtUtil;
-import com.train.member.entity.dto.MemberDto;
-import com.train.member.entity.vo.Member;
-import com.train.member.entity.query.MemberExample;
 import com.train.member.mapper.MemberMapper;
-import com.train.member.service.MemberService;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.Map;
  * @Created by 憧憬
  */
 @Service
+@DubboService(version = "1.0.0", token = "true")
 public class MemberServiceImpl implements MemberService {
 
     @Autowired
@@ -82,5 +84,10 @@ public class MemberServiceImpl implements MemberService {
         memberDto.setToken(jwt);
 
         return memberDto;
+    }
+
+    @Override
+    public List<Member> selectMemberList(MemberExample memberExample) {
+        return memberMapper.selectByExample(memberExample);
     }
 }

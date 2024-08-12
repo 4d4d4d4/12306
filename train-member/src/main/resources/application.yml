@@ -7,6 +7,8 @@ logging:
     root: info
     com.train.member.mapper: trace
 spring:
+  config:
+    import: optional:classpath:/application-common.properties
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: train
@@ -27,3 +29,13 @@ spring:
           max-wait: -1
 mybatis:
   mapper-locations: classpath:mapper/*.xml
+
+dubbo:
+  application:
+    name: dubbo-train-member-api-provider
+    qos-enable: false
+  protocol:
+    name: dubbo
+    port: 20880
+  registry:
+    address: nacos://192.168.40.1:8848

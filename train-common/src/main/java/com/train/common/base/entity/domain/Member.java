@@ -1,31 +1,21 @@
-package com.train.member.entity.vo;
+package com.train.common.base.entity.domain;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+import lombok.Setter;
 
-public class Member {
+import java.io.Serializable;
+
+@Setter
+@Getter
+public class Member implements Serializable {
 
     private Long id;
 
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "^1(3[0-9]|4[01456879]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\\d{8}$", message = "请输入国内有效的手机号")
     private String mobile;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
 
     @Override
     public String toString() {

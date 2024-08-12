@@ -36,7 +36,7 @@ public class GlobalExceptionController {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Result> Exception(Exception e, HttpServletRequest request, HttpServletResponse response) {
         Result error = Result.error();
-
+        e.printStackTrace();
         if (e instanceof NoHandlerFoundException) {
             // 路径参数错误
             error.setCode(ResultStatusEnum.CODE_404.getCode());

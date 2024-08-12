@@ -1,9 +1,13 @@
-package com.train.member.entity.query;
+package com.train.common.base.entity.query;
 
+import lombok.Getter;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemberExample {
+@Getter
+public class MemberExample implements Serializable {
     protected String orderByClause;
 
     protected boolean distinct;
@@ -18,20 +22,8 @@ public class MemberExample {
         this.orderByClause = orderByClause;
     }
 
-    public String getOrderByClause() {
-        return orderByClause;
-    }
-
     public void setDistinct(boolean distinct) {
         this.distinct = distinct;
-    }
-
-    public boolean isDistinct() {
-        return distinct;
-    }
-
-    public List<Criteria> getOredCriteria() {
-        return oredCriteria;
     }
 
     public void or(Criteria criteria) {
@@ -63,7 +55,7 @@ public class MemberExample {
         distinct = false;
     }
 
-    protected abstract static class GeneratedCriteria {
+    protected abstract static class GeneratedCriteria implements Serializable{
         protected List<Criterion> criteria;
 
         protected GeneratedCriteria() {
@@ -241,7 +233,7 @@ public class MemberExample {
         }
     }
 
-    public static class Criterion {
+    public static class Criterion implements Serializable{
         private String condition;
 
         private Object value;

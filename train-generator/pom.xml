@@ -26,7 +26,7 @@
                 <version>1.4.0</version>
                 <configuration>
 <!--                    <configurationFile>src/main/resources/generator-config-member.xml</configurationFile>-->
-                    <configurationFile>src/main/resources/generator-config-member.xml</configurationFile>
+                    <configurationFile>src/main/resources/generator-config-face.xml</configurationFile>
                     <!--<configurationFile>src/main/resources/generator-config-batch.xml</configurationFile>-->
                     <overwrite>true</overwrite>
                     <verbose>true</verbose>

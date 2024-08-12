@@ -26,7 +26,8 @@
 		<module>train-common</module>
 		<module>train-gateway</module>
 		<module>train-generator</module>
-	</modules>
+        <module>train-face</module>
+    </modules>
 	<scm>
 		<connection/>
 		<developerConnection/>
@@ -62,6 +63,11 @@
 				<groupId>com.train</groupId>
 				<artifactId>train-common</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-spring-boot-starter</artifactId>
+				<version>3.2.11</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

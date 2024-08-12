@@ -1,8 +1,10 @@
 package com.train.member.mapper;
 
-import com.train.member.entity.vo.Member;
-import com.train.member.entity.query.MemberExample;
+
 import java.util.List;
+
+import com.train.common.base.entity.domain.Member;
+import com.train.common.base.entity.query.MemberExample;
 import org.apache.ibatis.annotations.Param;
 
 public interface MemberMapper {

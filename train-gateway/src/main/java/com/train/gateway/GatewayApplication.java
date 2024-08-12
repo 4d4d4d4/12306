@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @Created by 憧憬
  */
 @SpringBootApplication
+@ComponentScan("com.train.gateway")
 public class GatewayApplication {
     private static final Logger logger = LoggerFactory.getLogger(GatewayApplication.class);
     public static void main(String[] args) {

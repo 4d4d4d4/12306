@@ -1,5 +1,10 @@
 package com.train.member.controller;
 
+import com.train.common.aspect.annotation.GlobalAnnotation;
+import com.train.common.base.entity.dto.MemberDto;
+import com.train.common.base.entity.domain.Member;
+import com.train.common.base.entity.query.MemberExample;
+import com.train.common.base.service.MemberService;
 import com.train.common.entity.RedisMobileSms;
 import com.train.common.entity.req.SenderTencentSms;
 import com.train.common.enums.RedisEnums;
@@ -9,12 +14,11 @@ import com.train.common.resp.exception.BusinessException;
 import com.train.common.entity.CreateImageCode;
 import com.train.common.utils.IdStrUtils;
 import com.train.common.utils.RedisUtils;
-import com.train.member.entity.dto.MemberDto;
-import com.train.member.entity.vo.Member;
-import com.train.member.entity.vo.MemberLogin;
-import com.train.member.service.MemberService;
+import com.train.common.utils.ThreadLocalUtils;
+import com.train.member.entity.vo.MemberLoginVo;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +39,7 @@ import java.util.List;
  * @Created by 憧憬
  */
 @RestController
+@RequestMapping("member")
 public class MemberController {
     private static final Logger log = LoggerFactory.getLogger(MemberController.class);
     @Autowired
@@ -131,7 +136,7 @@ public class MemberController {
 
     // 登录接口
     @PostMapping("/login")
-    public Result memberLogin(HttpSession session, @Validated @RequestBody MemberLogin login) {
+    public Result memberLogin(HttpSession session, @Validated @RequestBody MemberLoginVo login) {
         String type = login.getType();
         if (type == null || !type.equals("0")) {
             throw new BusinessException(ResultStatusEnum.CODE_504);
@@ -167,5 +172,15 @@ public class MemberController {
         MemberDto result = memberService.registerOrLoginMember(mobile);
 
         return Result.ok().data("data", result);
+    }
+
+    @PostMapping("/selectById")
+    @GlobalAnnotation(checkLogin = true)
+    public Result selectById(){
+        Long currentId = ThreadLocalUtils.getCurrentId();
+        MemberExample memberExample = new MemberExample();
+        memberExample.createCriteria().andIdEqualTo(currentId);
+        List<Member> members = memberService.selectMemberList(memberExample);
+        return Result.ok().data("data", members.get(0));
     }
 }

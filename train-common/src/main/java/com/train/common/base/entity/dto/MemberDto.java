@@ -1,6 +1,8 @@
-package com.train.member.entity.dto;
+package com.train.common.base.entity.dto;
 
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * <dl>
@@ -23,6 +25,6 @@ import lombok.Data;
  * @Author 16867.
  */
 @Data
-public class MemberDto {
+public class MemberDto implements Serializable {
     private String token; // jwtToken
 }

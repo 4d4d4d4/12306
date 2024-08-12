@@ -1,8 +1,7 @@
 package com.train.common.aspect;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.spring.PropertyPreFilters;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.train.common.aspect.annotation.GlobalAnnotation;
 import com.train.common.resp.Result;
 import com.train.common.resp.enmus.ResultStatusEnum;
@@ -17,6 +16,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -27,6 +27,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -39,13 +42,15 @@ import java.util.UUID;
 @Component
 @Order(1) // 优先级较高
 public class LogCommonAspect {
+    private Logger logger = LoggerFactory.getLogger(LoggerFactory.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     public LogCommonAspect() {
+        logger.info("加载全局拦截器....");
     }
 
-    private Logger logger = LoggerFactory.getLogger(LoggerFactory.class);
-
     // 日志aop切入点 train包下的所有controller的所有方法
-    @Pointcut("execution(public * com.train..*Controller.*(..))")
+    @Pointcut("execution(public * *..*Controller.*(..))")
     public void logPointcut() {
     }
 
@@ -56,40 +61,42 @@ public class LogCommonAspect {
         MDC.put("LOG_ID", System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 3));
 
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = requestAttributes.getRequest();
-        String method = request.getMethod();
-        StringBuffer requestURL = request.getRequestURL();
-        String remoteAddr = request.getHeader("x-forwarded-for");
-        if (remoteAddr == null || remoteAddr.isEmpty() || "unknown".equalsIgnoreCase(remoteAddr)) {
-            remoteAddr = request.getHeader("Proxy-Client-IP");
-        }
-        if (remoteAddr == null || remoteAddr.isEmpty() || "unknown".equalsIgnoreCase(remoteAddr)) {
-            remoteAddr = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (remoteAddr == null || remoteAddr.isEmpty() || "unknown".equalsIgnoreCase(remoteAddr)) {
-            remoteAddr = request.getRemoteAddr();
+        HttpServletRequest request = null;
+        try {
+            request = Objects.requireNonNull(requestAttributes).getRequest();
+            String method = request.getMethod();
+            StringBuffer requestURL = request.getRequestURL();
+            String remoteAddr = request.getHeader("x-forwarded-for");
+            if (remoteAddr == null || remoteAddr.isEmpty() || "unknown".equalsIgnoreCase(remoteAddr)) {
+                remoteAddr = request.getHeader("Proxy-Client-IP");
+            }
+            if (remoteAddr == null || remoteAddr.isEmpty() || "unknown".equalsIgnoreCase(remoteAddr)) {
+                remoteAddr = request.getHeader("WL-Proxy-Client-IP");
+            }
+            if (remoteAddr == null || remoteAddr.isEmpty() || "unknown".equalsIgnoreCase(remoteAddr)) {
+                remoteAddr = request.getRemoteAddr();
+            }
+            logger.info("请求地址：{},  请求类型:{}", requestURL, method);
+            logger.info("访客地址:{}", remoteAddr);
+        } catch (Exception e) {
+            logger.error("日志解析失败{}", e.getMessage());
         }
 
-        logger.info("请求地址：{},  请求类型:{}", requestURL, method);
 
         Signature signature = pjp.getSignature();
         String name = signature.getName();
         logger.info("请求方法名:{}", name);
-        logger.info("访客地址:{}", remoteAddr);
 
         // 打印方法参数
         Object[] args = pjp.getArgs();
-        Object[] arguments = new Object[args.length];
-        int argIndex = 0;
+        List<Object> arguments = new ArrayList<>();
         for (Object arg : args) {
             if (arg instanceof ServletRequest ||
                     arg instanceof ServletResponse ||
                     arg instanceof MultipartFile) {
                 continue;
             }
-            if (arg != null) {
-                arguments[argIndex++] = arg;
-            }
+            arguments.add(arg);
         }
         // 过滤敏感信息
         String[] excludeProperties = {"reference"};
@@ -97,29 +104,36 @@ public class LogCommonAspect {
         PropertyPreFilters.MySimplePropertyPreFilter argumentPropertyPreFilter = filters.addFilter(excludeProperties);
 
         // 设置 JSON 序列化选项
-        String jsonString = JSONObject.toJSONString(arguments, argumentPropertyPreFilter,
-                SerializerFeature.DisableCircularReferenceDetect, // 禁用循环引用检测
-                SerializerFeature.PrettyFormat); // 格式化输出
-        logger.info("接收到的参数：{}", jsonString);
+        if (arguments.isEmpty()) {
+            try {
+                String jsonString = objectMapper.writeValueAsString(arguments); // 格式化输出
+                logger.info("接收到的参数：{}", jsonString);
+            } catch (Exception e) {
+                logger.error("参数解析错误:{}", arguments);
+            }
+        }
+        logger.info("接收到的参数:{}", "");
+        GlobalAnnotation annotation = ((MethodSignature) pjp.getSignature()).getMethod().getAnnotation(GlobalAnnotation.class); // 判断方法是否有全局注解
 
-        GlobalAnnotation annotation = pjp.getClass().getAnnotation(GlobalAnnotation.class);
 
-        if(annotation != null && annotation.checkLogin()){
+        if (annotation != null && annotation.checkLogin()) {
             // 需要校验获取token字符串解析数据
-            String token = request.getHeader("Authorization");
-            Long memberId = JwtUtil.getMemberId(token);
-            if(memberId == null){
+            String token = Objects.requireNonNull(request).getHeader("Authorization");
+            try {
+                Long memberId = JwtUtil.getMemberId(token);
+                if (memberId == null) {
+                    throw new BusinessException(ResultStatusEnum.CODE_504);
+                }
+                ThreadLocalUtils.setCurrentId(memberId);
+                logger.info("当前会员id：{}", ThreadLocalUtils.getCurrentId());
+            } catch (Exception e) {
                 throw new BusinessException(ResultStatusEnum.CODE_504);
             }
-            ThreadLocalUtils.setCurrentId(memberId);
         }
-
         Object proceed = pjp.proceed();
 
-        String result = JSONObject.toJSONString(proceed, argumentPropertyPreFilter,
-                SerializerFeature.DisableCircularReferenceDetect, // 禁用循环引用检测
-                SerializerFeature.PrettyFormat); // 格式化输出
-        if(proceed instanceof ResponseEntity<?>){
+        String result = objectMapper.writeValueAsString(proceed); // 格式化输出
+        if (proceed instanceof ResponseEntity<?>) {
             ResponseEntity<Result> response = (ResponseEntity<Result>) proceed;
             System.out.println(response);
             return response;

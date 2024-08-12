@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -17,7 +16,6 @@ import java.util.Date;
 import java.util.Map;
 
 @Component
-@ConfigurationProperties("jwt.config")
 public class JwtUtil {
     private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
@@ -33,10 +31,12 @@ public class JwtUtil {
 
     @Value("${jwt.config.jwtId}")
     private String jwtIdStr;
+
     private static String jwtId;
 
     @Value("${jwt.config.subject}")
     private String subjectStr;
+
     private static String subject;
 
     private static AeadAlgorithm enc;

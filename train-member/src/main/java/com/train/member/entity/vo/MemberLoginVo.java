@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * <dl>
  * <dt><b>类功能概述</b></dt>
@@ -26,7 +28,7 @@ import lombok.Data;
  * @Author 16867.
  */
 @Data
-public class MemberLogin {
+public class MemberLoginVo implements Serializable {
 
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "^1(3[0-9]|4[01456879]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\\d{8}$", message = "请输入国内有效的手机号")
@@ -38,10 +40,10 @@ public class MemberLogin {
     @Nullable
     private String type = "0"; // 类型 注册/登录类型应为0
 
-    public MemberLogin() {
+    public MemberLoginVo() {
     }
 
-    public MemberLogin(String mobile, String checkCode, String mobileSms, @Nullable String type) {
+    public MemberLoginVo(String mobile, String checkCode, String mobileSms, @Nullable String type) {
         this.mobile = mobile;
         this.checkCode = checkCode;
         this.mobileSms = mobileSms;

@@ -4,11 +4,10 @@ import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 /**
  * @Classname IdUtils
@@ -17,7 +16,6 @@ import java.util.UUID;
  * @Created by 憧憬
  */
 @Component
-@Getter
 public class IdStrUtils {
 
     @Value("${current.utils.workerId}")
@@ -25,8 +23,8 @@ public class IdStrUtils {
 
     @Value("${current.utils.datacenterId}") // 不能注入静态字段
     private Long datacenterId;
-    private static Snowflake snowflake;
 
+    private Snowflake snowflake;
     @PostConstruct
     public void init(){
         snowflake = IdUtil.getSnowflake(workerId, datacenterId);

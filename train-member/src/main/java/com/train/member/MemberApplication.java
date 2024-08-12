@@ -1,5 +1,6 @@
 package com.train.member;
 
+import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @SpringBootApplication
 @ComponentScan("com.train")
 @MapperScan("com.train.member.mapper")
+@EnableDubbo
 public class MemberApplication {
     private static final Logger logger = LoggerFactory.getLogger(MemberApplication.class);
 

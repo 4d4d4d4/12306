@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.train.member.mapper.TicketMapper">
-  <resultMap id="BaseResultMap" type="com.train.member.entity.vo.Ticket">
+  <resultMap id="BaseResultMap" type="com.train.common.base.entity.domain.Ticket">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="member_id" jdbcType="BIGINT" property="memberId" />
     <result column="passenger_id" jdbcType="BIGINT" property="passengerId" />
@@ -82,7 +82,7 @@
     seat_row, seat_col, start_station, start_time, end_station, end_time, seat_type, 
     create_time, update_time
   </sql>
-  <select id="selectByExample" parameterType="com.train.member.entity.query.TicketExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.train.common.base.entity.query.TicketExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -106,13 +106,13 @@
     delete from ticket
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="com.train.member.entity.query.TicketExample">
+  <delete id="deleteByExample" parameterType="com.train.common.base.entity.query.TicketExample">
     delete from ticket
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.train.member.entity.vo.Ticket">
+  <insert id="insert" parameterType="com.train.common.base.entity.domain.Ticket">
     insert into ticket (id, member_id, passenger_id, 
       passenger_name, train_date, train_code, 
       carriage_index, seat_row, seat_col, 
@@ -126,7 +126,7 @@
       #{endTime,jdbcType=TIME}, #{seatType,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, 
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.train.member.entity.vo.Ticket">
+  <insert id="insertSelective" parameterType="com.train.common.base.entity.domain.Ticket">
     insert into ticket
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -229,7 +229,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.train.member.entity.query.TicketExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.train.common.base.entity.query.TicketExample" resultType="java.lang.Long">
     select count(*) from ticket
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -313,7 +313,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.train.member.entity.vo.Ticket">
+  <update id="updateByPrimaryKeySelective" parameterType="com.train.common.base.entity.domain.Ticket">
     update ticket
     <set>
       <if test="memberId != null">
@@ -364,7 +364,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.train.member.entity.vo.Ticket">
+  <update id="updateByPrimaryKey" parameterType="com.train.common.base.entity.domain.Ticket">
     update ticket
     set member_id = #{memberId,jdbcType=BIGINT},
       passenger_id = #{passengerId,jdbcType=BIGINT},
