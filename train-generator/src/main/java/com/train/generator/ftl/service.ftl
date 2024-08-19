@@ -1,8 +1,8 @@
-package com.train.member.service;
+package com.train.common.base.service;
 
 import com.train.common.base.entity.domain.Passenger;
-import com.train.member.entity.vo.PassengerListVo;
-import com.train.member.entity.vo.PassengerSaveVo;
+import com.train.common.base.entity.vo.PassengerListVo;
+import com.train.common.base.entity.vo.PassengerSaveVo;
 
 import java.util.List;
 
@@ -30,4 +30,8 @@ public interface PassengerService {
     void save(PassengerSaveVo passengerSaveVo);
 
     List<Passenger> listByCondition(PassengerListVo passengerListVo);
+
+    void deleteByIds(List<Long> passengerList);
+
+    Integer listCount(PassengerListVo passengerListVo);
 }

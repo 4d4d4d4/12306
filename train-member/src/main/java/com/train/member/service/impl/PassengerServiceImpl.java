@@ -1,17 +1,18 @@
 package com.train.member.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.IdUtil;
+import com.github.pagehelper.PageHelper;
 import com.train.common.base.entity.domain.Passenger;
 import com.train.common.base.entity.query.PassengerExample;
+import com.train.common.base.entity.vo.PassengerListVo;
+import com.train.common.base.entity.vo.PassengerSaveVo;
+import com.train.common.base.service.PassengerService;
 import com.train.common.resp.enmus.ResultStatusEnum;
 import com.train.common.resp.exception.BusinessException;
 import com.train.common.utils.IdStrUtils;
 import com.train.common.utils.ThreadLocalUtils;
-import com.train.member.entity.vo.PassengerListVo;
-import com.train.member.entity.vo.PassengerSaveVo;
 import com.train.member.mapper.PassengerMapper;
-import com.train.member.service.PassengerService;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,12 +39,14 @@ import java.util.List;
  * @Copyright Copyright &copy; 2024，. All rights reserved.
  * @Author 16867.
  */
+@DubboService(version = "1.0.0", token = "true")
 @Service
 public class PassengerServiceImpl implements PassengerService {
     @Autowired
     private PassengerMapper passengerMapper;
     @Autowired
     private IdStrUtils idStrUtils;
+
     @Override
     public void save(PassengerSaveVo passengerSaveVo) {
         // 根据身份证号和会员id查重
@@ -54,7 +57,7 @@ public class PassengerServiceImpl implements PassengerService {
         passengerExample.createCriteria().andMemberIdEqualTo(currentId);
         List<Passenger> passengers = passengerMapper.selectByExample(passengerExample);
 
-        if(!passengers.isEmpty()){
+        if (!passengers.isEmpty()) {
             throw new BusinessException(ResultStatusEnum.CODE_601.getCode(), "乘车人信息已存在该会员账号，请勿重复添加");
         }
 
@@ -67,13 +70,36 @@ public class PassengerServiceImpl implements PassengerService {
         passengerMapper.insert(passenger);
     }
 
+    /**
+     * 条件分页查询
+     *
+     * @param passengerListVo
+     * @return
+     */
     @Override
     public List<Passenger> listByCondition(PassengerListVo passengerListVo) {
         PassengerExample passengerExample = new PassengerExample();
-        if(!passengerListVo.getName().isEmpty()) {
-            passengerExample.createCriteria().andNameLike( "%" + passengerListVo.getName() + "%");
+        if (!passengerListVo.getName().isEmpty()) {
+            passengerExample.createCriteria().andNameLike("%" + passengerListVo.getName() + "%");
+            passengerExample.setOrderByClause("create_time");
         }
+        PageHelper.startPage(passengerListVo.getPage(), passengerListVo.getSize());
         List<Passenger> passengers = passengerMapper.selectByExample(passengerExample);
+        passengerExample.clear();
         return passengers;
+    }
+
+    @Override
+    public void deleteByIds(List<Long> passengerList) {
+        passengerMapper.deleteBatch(passengerList);
+    }
+
+    @Override
+    public Integer listCount(PassengerListVo passengerListVo) {
+        PassengerExample passengerExample = new PassengerExample();
+        passengerExample.clear();
+        passengerExample.createCriteria().andNameLike("%" + passengerListVo.getName() + "%");
+        passengerExample.clear();
+        return Math.toIntExact(passengerMapper.countByExample(passengerExample));
     }
 }

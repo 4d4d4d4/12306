@@ -1,7 +1,8 @@
-package com.train.member.entity.vo;
+package com.train.common.base.entity.vo;
 
-import jakarta.validation.constraints.NotBlank;
+import com.train.common.base.entity.query.BasePageQuery;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * <dl>
@@ -23,7 +24,8 @@ import lombok.Data;
  * @Copyright Copyright &copy; 2024，. All rights reserved.
  * @Author cqy.
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class PassengerListVo {
+public class PassengerListVo extends BasePageQuery {
     private String name;
 }

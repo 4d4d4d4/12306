@@ -1,5 +1,7 @@
 package com.train.common.base.entity.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -11,6 +13,7 @@ import java.io.Serializable;
 @Getter
 public class Member implements Serializable {
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @NotBlank(message = "手机号不能为空")

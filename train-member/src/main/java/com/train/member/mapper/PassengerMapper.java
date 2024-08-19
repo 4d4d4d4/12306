@@ -27,4 +27,6 @@ public interface PassengerMapper {
     int updateByPrimaryKeySelective(Passenger record);
 
     int updateByPrimaryKey(Passenger record);
+
+    void deleteBatch(@Param("ids") List<Long> passengerList);
 }

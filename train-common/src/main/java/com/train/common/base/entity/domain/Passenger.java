@@ -1,5 +1,7 @@
 package com.train.common.base.entity.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +11,10 @@ import java.util.Date;
 @Setter
 @Getter
 public class Passenger implements Serializable {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long memberId;
 
     private String name;

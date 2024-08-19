@@ -101,7 +101,16 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.train.common.base.entity.domain.Passenger">
+    <delete id="deleteBatch">
+      delete from passenger
+      <where>
+          id in
+        <foreach collection="ids" item="id" separator="," close=")" open="(">
+          #{id}
+        </foreach>
+      </where>
+    </delete>
+    <insert id="insert" parameterType="com.train.common.base.entity.domain.Passenger">
     insert into passenger (id, member_id, `name`, 
       id_card, `type`, create_time, 
       update_time)

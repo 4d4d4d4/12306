@@ -4,6 +4,7 @@ import com.train.common.aspect.annotation.GlobalAnnotation;
 import com.train.common.base.entity.dto.MemberDto;
 import com.train.common.base.entity.domain.Member;
 import com.train.common.base.entity.query.MemberExample;
+import com.train.common.base.entity.vo.MemberLoginVo;
 import com.train.common.base.service.MemberService;
 import com.train.common.entity.RedisMobileSms;
 import com.train.common.entity.req.SenderTencentSms;
@@ -15,10 +16,8 @@ import com.train.common.entity.CreateImageCode;
 import com.train.common.utils.IdStrUtils;
 import com.train.common.utils.RedisUtils;
 import com.train.common.utils.ThreadLocalUtils;
-import com.train.member.entity.vo.MemberLoginVo;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,7 +151,7 @@ public class MemberController {
         if ((redisCheckCode == null) || !redisCheckCode.equalsIgnoreCase(checkCode)) {
             throw new BusinessException(ResultStatusEnum.CODE_505);
         }
-//          手机验证码校验目前省略掉
+//     TODO      手机验证码校验目前省略掉
 //        String key = RedisEnums.MOBILE_SMS_ENUM.getPrefix() + mobile;
 //        RedisMobileSms redisMobileSms = (RedisMobileSms) redisUtils.get(key);
 //        if(redisMobileSms == null){

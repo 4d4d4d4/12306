@@ -132,15 +132,18 @@ public class LogCommonAspect {
         }
         Object proceed = pjp.proceed();
 
-        String result = objectMapper.writeValueAsString(proceed); // 格式化输出
-        if (proceed instanceof ResponseEntity<?>) {
-            ResponseEntity<Result> response = (ResponseEntity<Result>) proceed;
-            System.out.println(response);
-            return response;
+        try {
+            String result = objectMapper.writeValueAsString(proceed); // 格式化输出
+            if (proceed instanceof ResponseEntity<?>) {
+                ResponseEntity<Result> response = (ResponseEntity<Result>) proceed;
+                System.out.println(response);
+                return response;
+            }
+            logger.info("返回的数据是：{}", result);
+            logger.info("程序运行时间为:{}ms", (System.currentTimeMillis() - startTime));
+        }catch (Exception e) {
+            logger.info("【结果跟踪日志输出失败：{}】", e.getMessage());
         }
-        logger.info("返回的数据是：{}", result);
-        logger.info("程序运行时间为:{}ms", (System.currentTimeMillis() - startTime));
-
         return proceed;
     }
 }
