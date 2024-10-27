@@ -10,6 +10,7 @@ import com.train.common.resp.exception.BusinessException;
 import com.train.common.utils.IdStrUtils;
 import com.train.common.utils.JwtUtil;
 import com.train.member.mapper.MemberMapper;
+import io.jsonwebtoken.Claims;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,8 @@ public class MemberServiceImpl implements MemberService {
     private MemberMapper memberMapper;
     @Autowired
     private IdStrUtils idStrUtils;
+    @Autowired
+    private JwtUtil jwtUtil;
 
 
     @Override
@@ -66,7 +69,9 @@ public class MemberServiceImpl implements MemberService {
             Member member = members.get(0);
             Map<String, Object> params = new HashMap<>();
             params.put("memberId", member.getId());
-            String jwt = JwtUtil.createJWT(params);
+            String jwt = jwtUtil.createJWT(params);
+            // 测试
+            jwtUtil.parseJWT(jwt);
             memberDto.setToken(jwt);
 
             // 已注册
@@ -80,7 +85,8 @@ public class MemberServiceImpl implements MemberService {
 
         Map<String, Object> params = new HashMap<>();
         params.put("memberId", id);
-        String jwt = JwtUtil.createJWT(params);
+        String jwt = jwtUtil.createJWT(params);
+        System.out.println("创建的jwt:" + jwt);
         memberDto.setToken(jwt);
 
         return memberDto;

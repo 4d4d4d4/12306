@@ -1,0 +1,3 @@
+# security/serialize.allowlist
+com.github.pagehelper.Page
+com.train.common.base.entity.domain.TrainCarriage

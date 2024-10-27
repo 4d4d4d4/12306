@@ -14,6 +14,10 @@ spring:
           uri: http://127.0.0.1:5010
           predicates:
             - Path=/mface/**
+        - id: business
+          uri: http://127.0.0.1:5002
+          predicates:
+            - Path=/business/**
       #
       globalcors: # 全局的跨域处理
         add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
@@ -23,6 +27,8 @@ spring:
             allow-credentials: true
             # 允许跨域的源(网站域名/ip)，设置*为全部
             allowed-origin-patterns:
+              - "http://127.0.0.1:5173"
+              - "http://127.0.0.1:9000"
               -  "*"
             # 允许跨域的method， 默认为GET和OPTIONS，设置*为全部
             allowedMethods: "*"

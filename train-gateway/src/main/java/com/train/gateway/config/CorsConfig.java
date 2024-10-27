@@ -16,7 +16,7 @@ public class CorsConfig {
     Logger logger = LoggerFactory.getLogger(CorsConfig.class);
     public CorsConfiguration corsConfiguration(){
         CorsConfiguration configuration = new CorsConfiguration();
-        List<String> origins = List.of("http://localhost:9000/**","http://localhost:9000");
+        List<String> origins = List.of("http://localhost:9000/**","http://localhost:9000", "http://localhost:5173", "http://localhost:5173/**");
         configuration.setAllowedOrigins(origins);
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Collections.singletonList("*"));

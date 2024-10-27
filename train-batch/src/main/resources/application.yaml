@@ -1,0 +1,42 @@
+server:
+  port: 5002
+  servlet:
+    context-path: /batch/
+logging:
+  level:
+    root: info
+    com.train.batch.mapper: trace
+spring:
+  config:
+    import: optional:classpath:/application-common.properties
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: train
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/batch?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true
+  data:
+    redis:
+      host: localhost
+      password: 123456
+      database: 5
+      port: 6379
+      connect-timeout: 2000
+      jedis:
+        pool:
+          max-active: 10
+          min-idle: 0
+          max-idle: 8
+          max-wait: -1
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+dubbo:
+  application:
+    name: dubbo-train-business-api-provider
+    qos-enable: false
+    qos-check: false
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: nacos://192.168.40.1:8848

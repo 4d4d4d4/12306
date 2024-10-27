@@ -29,8 +29,8 @@
         </jdbcConnection>
 
         <!-- domain类的位置 targetProject是相对pom.xml的路径-->
-        <javaModelGenerator targetProject="../train-batch/src/main/java"
-                            targetPackage="com.train.batch.entity"/>
+        <javaModelGenerator targetProject="../train-common/src/main/java"
+                            targetPackage="com.train.common.base.entity"/>
 
         <!-- mapper xml的位置 targetProject是相对pom.xml的路径 -->
         <sqlMapGenerator targetProject="../train-batch/src/main/resources"
@@ -41,6 +41,6 @@
                              targetPackage="com.train.batch.mapper"
                              type="XMLMAPPER"/>
 
-<!--        <table tableName="batch" domainObjectName="Batch"/>-->
+        <table tableName="batch" domainObjectName="Batch"/>
     </context>
 </generatorConfiguration>

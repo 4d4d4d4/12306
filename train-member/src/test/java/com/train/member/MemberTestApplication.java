@@ -40,6 +40,9 @@ public class MemberTestApplication {
     private MemberMapper memberMapper;
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Test
     public void test() throws JsonProcessingException {
 //        MemberExample memberExample = new MemberExample();
@@ -62,11 +65,18 @@ public class MemberTestApplication {
 
     @Test
     public void test2() throws Exception {
-        Map<String, Object> map = new HashMap<>();
-        map.put("memberId", 1816734016573935616L);
-        String jwt = JwtUtil.createJWT(map);
+        System.out.println(jwtUtil); // com.train.common.config.JwtUtil@2523730b
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+        stringObjectHashMap.put("id", 111111111);
+        String jwt = jwtUtil.createJWT(stringObjectHashMap);
         System.out.println(jwt);
-        Claims claims = JwtUtil.parseJWT(jwt);
-        System.out.println(claims.get("memberId"));
+        Claims claims = jwtUtil.parseJWT(jwt);
+        System.out.println(claims.get("id"));
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("memberId", 1816734016573935616L);
+//        String jwt = jwtUtil.createJWT(map);
+//        System.out.println(jwt);
+//        Claims claims = jwtUtil.parseJWT(jwt);
+
     }
 }

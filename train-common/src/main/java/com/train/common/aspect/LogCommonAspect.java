@@ -20,6 +20,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -44,10 +45,11 @@ import java.util.UUID;
 public class LogCommonAspect {
     private Logger logger = LoggerFactory.getLogger(LoggerFactory.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
-
     public LogCommonAspect() {
         logger.info("加载全局拦截器....");
     }
+    @Autowired
+    private JwtUtil jwtUtil;
 
     // 日志aop切入点 train包下的所有controller的所有方法
     @Pointcut("execution(public * *..*Controller.*(..))")
@@ -119,14 +121,17 @@ public class LogCommonAspect {
         if (annotation != null && annotation.checkLogin()) {
             // 需要校验获取token字符串解析数据
             String token = Objects.requireNonNull(request).getHeader("Authorization");
+            logger.info("接收到的token字符串:{}", token);
             try {
-                Long memberId = JwtUtil.getMemberId(token);
+                Long memberId = jwtUtil.getMemberId(token);
                 if (memberId == null) {
+                    logger.error("解析会员ID失败");
                     throw new BusinessException(ResultStatusEnum.CODE_504);
                 }
                 ThreadLocalUtils.setCurrentId(memberId);
                 logger.info("当前会员id：{}", ThreadLocalUtils.getCurrentId());
             } catch (Exception e) {
+                logger.error("解析会员ID异常:{}", e.getMessage());
                 throw new BusinessException(ResultStatusEnum.CODE_504);
             }
         }

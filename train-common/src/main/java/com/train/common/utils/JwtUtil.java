@@ -8,10 +8,10 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Date;
 import java.util.Map;
 
@@ -43,44 +43,51 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
-        System.out.println(123);
-        if (ttlMillsStr == null) {
-            ttlMills = 1000 * 60 * 60 * 12L;
-        } else {
-            ttlMillsStr = ttlMillsStr.trim();
-            String[] split = ttlMillsStr.split("\\*");
-            Long ttl = 1L;
-            for (String s : split) {
-                long l = Long.parseLong(s);
-                ttl = ttl * l;
-            }
-            ttlMills = ttl;
-            if(ttlMills < 1000 * 60 * 60 * 12L){
+        synchronized (JwtUtil.class) {
+            System.out.println(123);
+            if (ttlMillsStr == null) {
                 ttlMills = 1000 * 60 * 60 * 12L;
-            }
-        }
-        if (property == null) {
-            key = Jwts.SIG.HS256.key().build();
-            enc = Jwts.ENC.A128CBC_HS256;
-        } else {
-            if (property.equalsIgnoreCase("hs256")) {
-                key = Jwts.SIG.HS256.key().build();
-                enc = Jwts.ENC.A128CBC_HS256;
-            } else if (property.equalsIgnoreCase("hs384")) {
-                key = Jwts.SIG.HS384.key().build();
-                enc = Jwts.ENC.A192CBC_HS384;
-            } else if (property.equalsIgnoreCase("hs512")) {
-                key = Jwts.SIG.HS512.key().build();
-                enc = Jwts.ENC.A256CBC_HS512;
             } else {
-                key = Jwts.SIG.HS256.key().build();
-                enc = Jwts.ENC.A128CBC_HS256;
+                ttlMillsStr = ttlMillsStr.trim();
+                String[] split = ttlMillsStr.split("\\*");
+                Long ttl = 1L;
+                for (String s : split) {
+                    long l = Long.parseLong(s);
+                    ttl = ttl * l;
+                }
+                ttlMills = ttl;
+                if (ttlMills < 1000 * 60 * 60 * 12L) {
+                    ttlMills = 1000 * 60 * 60 * 12L;
+                }
             }
+            if (property == null) {
+//                key = Jwts.SIG.HS256.key().build();
+                key = new SecretKeySpec("trainkey256652trainkey1234567890".getBytes(), "HmacSHA256");
+                enc = Jwts.ENC.A128CBC_HS256;
+            } else {
+                if (property.equalsIgnoreCase("hs256")) {
+//                    key = Jwts.SIG.HS256.key().build();
+                    key = new SecretKeySpec("trainkey256652trainkey1234567890".getBytes(), "HmacSHA256");
+                    enc = Jwts.ENC.A128CBC_HS256;
+                } else if (property.equalsIgnoreCase("hs384")) {
+                    key = Jwts.SIG.HS384.key().build();
+                    enc = Jwts.ENC.A192CBC_HS384;
+                } else if (property.equalsIgnoreCase("hs512")) {
+                    key = Jwts.SIG.HS512.key().build();
+                    enc = Jwts.ENC.A256CBC_HS512;
+                } else {
+                    key = Jwts.SIG.HS256.key().build();
+                    enc = Jwts.ENC.A128CBC_HS256;
+                }
+            }
+            key = new SecretKeySpec("trainkey256652trainkey1234567890".getBytes(), "HmacSHA256");
+
+            subject = subjectStr;
+            jwtId = jwtIdStr;
+            System.out.println(key + "   " + enc + "  " + subject + " " + jwtId + "   " + ttlMills + "   ");
         }
-        subject = subjectStr;
-        jwtId = jwtIdStr;
-        System.out.println(key.getAlgorithm() + "   " + enc + "  " + subject + " " + jwtId + "   " + ttlMills);
     }
+
 
     /**
      * 生成jwt
@@ -117,7 +124,8 @@ public class JwtUtil {
      */
     public static Claims parseJWT(String token) {
         // 得到DefaultJwtParser
-        Claims payload = Jwts.parser().decryptWith(key).build().parseEncryptedClaims(token).getPayload();
+        log.info("当前的key是:{}", key);
+        Claims payload = Jwts.parser().enc().and().decryptWith(key).build().parseEncryptedClaims(token).getPayload();
         boolean isSubject = payload.getSubject().equals(subject);
         if (!isSubject) {
             log.info("登录失败，:token为：{},失败原因：{}", token, "jwt的主题与期望的不符合");
@@ -133,7 +141,7 @@ public class JwtUtil {
         return claims;
     }
 
-    public static Long getMemberId(String token){
+    public static Long getMemberId(String token) {
         Claims claims = parseJWT(token);
         return (Long) claims.get("memberId");
     }
