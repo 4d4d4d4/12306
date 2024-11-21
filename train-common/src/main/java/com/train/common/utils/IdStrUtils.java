@@ -4,8 +4,7 @@ import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
-import lombok.Getter;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +31,7 @@ public class IdStrUtils {
 
     public String snowFlakeStr() {
         return snowflake.nextIdStr();
+
     }
 
     public Long snowFlakeLong() {

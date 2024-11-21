@@ -63,8 +63,8 @@ public class PassengerController {
         }).toList();
         Pagination<PassengerDto> passengerDtoPagination = new Pagination<>();
         passengerDtoPagination.setData(passengerDtoList);
-        passengerDtoPagination.setCurrent(passengerListVo.getPage());
-        passengerDtoPagination.setSize(passengerListVo.getSize());
+        passengerDtoPagination.setCurrent(passengerListVo.getCurrentPage());
+        passengerDtoPagination.setSize(passengerListVo.getPageSize());
         Integer total = passengerService.listCount(passengerListVo);
         passengerDtoPagination.setTotal(total);
         return Result.ok().data("data",passengerDtoPagination);

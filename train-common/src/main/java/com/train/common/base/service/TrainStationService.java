@@ -1,5 +1,15 @@
 package com.train.common.base.service;
 
+import com.train.common.base.entity.domain.DailyTrainStation;
+import com.train.common.base.entity.domain.TrainStation;
+import com.train.common.base.entity.query.DailyTrainStationQuery;
+import com.train.common.base.entity.query.StationIndexQuery;
+import com.train.common.base.entity.query.TrainStationQuery;
+import com.train.common.base.entity.vo.PaginationResultVo;
+import com.train.common.base.entity.vo.StationIndexVo;
+
+import java.util.List;
+
 /**
  * <dl>
  * <dt><b>类功能概述</b></dt>
@@ -21,4 +31,9 @@ package com.train.common.base.service;
  * @Author cqy.
  */
 public interface TrainStationService {
+    List<TrainStation> getTrainStationByTrainCode(String trainCode);
+
+    PaginationResultVo<TrainStation> getStationByCondition(TrainStationQuery query);
+
+    List<TrainStation> selectAllTStationByCondition(TrainStation ts);
 }

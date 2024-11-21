@@ -16,13 +16,13 @@ import com.train.common.base.entity.vo.SeatColVo;
 import com.train.common.base.entity.vo.SeatVo;
 import com.train.common.base.service.CarriageService;
 import com.train.common.base.service.SeatService;
-import com.train.common.enums.SeatColumnEnum;
-import com.train.common.enums.SeatTypeEnum;
 import com.train.common.resp.Result;
 import com.train.common.utils.IdStrUtils;
 import com.train.common.utils.StringTool;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,6 +54,7 @@ import java.util.stream.IntStream;
  */
 @DubboService(version = "1.0.0", token = "true")
 public class SeatServiceImpl implements SeatService {
+    private static final Logger log = LoggerFactory.getLogger(SeatServiceImpl.class);
     @Autowired
     private TrainSeatMapper seatMapper;
 
@@ -76,7 +77,7 @@ public class SeatServiceImpl implements SeatService {
         // 获取当前车座信息
         String seatType = seatVo.getSeatType();
         Integer row = Integer.parseInt(seatVo.getRow());
-        Integer col = Integer.parseInt(seatVo.getCol());
+        Integer col = StringTool.stringToNumberByEnum(seatType, seatVo.getCol());
         Integer carriageSeatIndex = seatVo.getCarriageSeatIndex();
         // 校核当作座位类型和车厢座位类型是否一一致
         if(!StrUtil.equals(seatType, trainCarriage.getSeatType())){
@@ -85,10 +86,13 @@ public class SeatServiceImpl implements SeatService {
         // 获取当前车厢行列数
         Integer colCount = trainCarriage.getColCount();
         Integer rowCount = trainCarriage.getRowCount();
-        if(colCount<0 || colCount>col) {
+        if(colCount<0 || colCount < col) {
+            log.error("col :{} , colcount:{}", col, colCount);
             return Result.error().message("添加座位失败，添加的座位列数异常");
         }
-        if(rowCount<0 || rowCount>row){
+        if(rowCount<0 || rowCount < row){
+            log.error("row :{} , rowCount:{}", row, rowCount);
+
             return Result.error().message("添加座位失败，添加的座位排数异常");
         }
         Integer seatCount = trainCarriage.getSeatCount();
@@ -124,7 +128,7 @@ public class SeatServiceImpl implements SeatService {
         // 获取当前车座信息
         String seatType = trainSeat.getSeatType();
         Integer row = Integer.parseInt(trainSeat.getRow());
-        Integer col = Integer.parseInt(trainSeat.getCol());
+        Integer col = StringTool.stringToNumberByEnum(seatType, trainSeat.getCol());
         Integer carriageSeatIndex = trainSeat.getCarriageSeatIndex();
         // 校核当作座位类型和车厢座位类型是否一一致
         if(!StrUtil.equals(seatType, trainCarriage.getSeatType())){
@@ -234,5 +238,25 @@ public class SeatServiceImpl implements SeatService {
         trainSeatExample.or().andTrainCodeEqualTo(trainCode).andCarriageIndexEqualTo(carriageVoIndex);
         seatMapper.deleteByExample(trainSeatExample);
 
+    }
+
+    @Override
+    public List<TrainSeat> selectAllSeatByCondition(TrainSeat trainSeat) {
+        TrainSeatExample trainSeatExample = new TrainSeatExample();
+        if(trainSeat != null){
+            TrainSeatExample.Criteria criteria = trainSeatExample.createCriteria();
+            if(trainSeat.getId() != null){
+                criteria.andIdEqualTo(trainSeat.getId());
+            }
+            if(StrUtil.isNotBlank(trainSeat.getTrainCode())){
+                criteria.andTrainCodeEqualTo(trainSeat.getTrainCode());
+            }
+            if(StrUtil.isNotBlank(trainSeat.getSeatType())){
+                criteria.andSeatTypeEqualTo(trainSeat.getSeatType());
+            }
+        }
+        trainSeatExample.setOrderByClause("train_code asc");
+        List<TrainSeat> trainSeats = seatMapper.selectByExample(trainSeatExample);
+        return trainSeats;
     }
 }

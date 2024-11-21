@@ -3,14 +3,15 @@ package com.train.common.base.entity.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class DailyTrainStation {
+public class DailyTrainStation implements Serializable {
     private Long id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
     private String trainCode;
@@ -21,26 +22,26 @@ public class DailyTrainStation {
 
     private String namePinyin;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date inTime;
+    @JsonFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = " HH:mm:ss")
+    private Date inTime; // 进站时间
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date outTime;
+    @JsonFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm:ss")
+    private Date outTime; // 出站时间
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date stopTime;
+    @JsonFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm:ss")
+    private Date stopTime; // 暂停时间
 
     private BigDecimal km;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     public Long getId() {

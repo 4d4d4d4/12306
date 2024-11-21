@@ -1,14 +1,14 @@
 package com.train.business.controller.admin;
 
 import cn.hutool.core.util.StrUtil;
+import com.train.common.base.entity.domain.DailyTrainSeat;
 import com.train.common.base.entity.domain.TrainCarriage;
 import com.train.common.base.entity.domain.TrainSeat;
+import com.train.common.base.entity.query.DailySeatQuery;
 import com.train.common.base.entity.query.SeatQuery;
-import com.train.common.base.entity.vo.PaginationResultVo;
-import com.train.common.base.entity.vo.SeatColVo;
-import com.train.common.base.entity.vo.SeatVo;
-import com.train.common.base.entity.vo.TrainCodeVo;
+import com.train.common.base.entity.vo.*;
 import com.train.common.base.service.CarriageService;
+import com.train.common.base.service.DailySeatService;
 import com.train.common.base.service.SeatService;
 import com.train.common.resp.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -44,6 +44,10 @@ public class AdminSeatController {
 
     @DubboReference(version = "1.0.0", check = false)
     private CarriageService carriageService;
+
+    @DubboReference(version = "1.0.0", check = false)
+    private DailySeatService dSeatService;
+
     @PostMapping("/addSeat")
     public Result batchAddSeat(@RequestBody SeatVo seatVo){
         Integer carriageIndex = seatVo.getCarriageIndex();
@@ -55,8 +59,8 @@ public class AdminSeatController {
 
         return seatService.addSeat(trainCarriage, seatVo);
     }
-    @PostMapping("/delSeat")
-    public Result delSeat(@RequestBody List<Long> ids){
+    @GetMapping("/delSeat")
+    public Result delSeat(@RequestParam("ids") List<Long> ids){
         seatService.delSeats(ids);
         return Result.ok();
     }
@@ -86,4 +90,33 @@ public class AdminSeatController {
         return Result.ok().data("result", res);
     }
 
+    // 每日车座数据
+    @PostMapping("/day/listByCondition")
+    public Result queryAllDSeat(@RequestBody DailySeatQuery q){
+        PaginationResultVo<DailyTrainSeat> result = dSeatService.queryAllDSeat(q);
+        return Result.ok().data("result", result);
+    }
+    @GetMapping("/day/batchDSeat")
+    public Result batchDSeat(@RequestParam("ids") List<Long> ids){
+        return dSeatService.batchDelSeat(ids);
+    }
+    @PostMapping("/day/addDSeat")
+    public Result addDSeat(@RequestBody DailySeatVo seatVo){
+        return dSeatService.insertDSeat(seatVo);
+    }
+    @PostMapping("/day/updateDSeat")
+    public Result updateDSeat(@RequestBody DailyTrainSeat seat)
+    {
+        return dSeatService.updateDSeat(seat);
+    }
+
+    /**
+     * 创建某日车座
+     * @param vo
+     * @return
+     */
+    @PostMapping("/day/createDSeat")
+    public Result createDSeat(@RequestBody DailySeatVo vo){
+        return  dSeatService.createDSeat(vo);
+    }
 }

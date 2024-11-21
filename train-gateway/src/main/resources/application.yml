@@ -18,6 +18,10 @@ spring:
           uri: http://127.0.0.1:5002
           predicates:
             - Path=/business/**
+        - id: batch
+          uri: http://127.0.0.1:5003
+          predicates:
+            - Path=/batch/**
       #
       globalcors: # 全局的跨域处理
         add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题

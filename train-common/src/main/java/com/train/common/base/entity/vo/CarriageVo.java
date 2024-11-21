@@ -30,22 +30,16 @@ import java.util.Date;
 @Data
 public class CarriageVo implements Serializable {
     private String trainCode;
-
     private Integer index;
-
     private String seatType; // SeatTypeEnum
-
     private Integer seatCount;
-
     private Integer rowCount;
-
     private Integer colCount;
-
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 }

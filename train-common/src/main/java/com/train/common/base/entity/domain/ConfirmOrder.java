@@ -10,8 +10,8 @@ public class ConfirmOrder {
 
     private Long memberId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date date;
 
     private String trainCode;
@@ -24,12 +24,12 @@ public class ConfirmOrder {
 
     private String status;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     private String tickets;

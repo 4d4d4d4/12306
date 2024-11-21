@@ -3,13 +3,14 @@ package com.train.common.base.entity.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class DailyTrainSeat {
+public class DailyTrainSeat implements Serializable {
     private Long id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
     private String trainCode;
@@ -26,12 +27,12 @@ public class DailyTrainSeat {
 
     private String sell;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     public Long getId() {

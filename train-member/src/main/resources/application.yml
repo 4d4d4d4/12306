@@ -31,6 +31,10 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
 
 dubbo:
+  provider:
+    timeout: 5000
+  consumer:
+    timeout: 5000
   application:
     name: dubbo-train-member-api-provider
     qos-enable: false

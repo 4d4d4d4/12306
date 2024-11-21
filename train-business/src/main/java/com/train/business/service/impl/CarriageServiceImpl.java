@@ -1,8 +1,9 @@
 package com.train.business.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.train.business.mapper.StationMapper;
+import com.github.pagehelper.PageInfo;
 import com.train.business.mapper.TrainCarriageMapper;
 import com.train.common.base.entity.domain.Train;
 import com.train.common.base.entity.domain.TrainCarriage;
@@ -10,21 +11,17 @@ import com.train.common.base.entity.domain.TrainSeat;
 import com.train.common.base.entity.query.CarriageQuery;
 import com.train.common.base.entity.query.SimplePage;
 import com.train.common.base.entity.query.TrainCarriageExample;
-import com.train.common.base.entity.query.TrainExample;
-import com.train.common.base.entity.vo.CarriageIndexVo;
-import com.train.common.base.entity.vo.CarriageVo;
-import com.train.common.base.entity.vo.PaginationResultVo;
-import com.train.common.base.entity.vo.TrainCodeVo;
+import com.train.common.base.entity.vo.*;
 import com.train.common.base.service.CarriageService;
 import com.train.common.base.service.SeatService;
 import com.train.common.base.service.TrainService;
 import com.train.common.enums.CarriageIndexEnum;
-import com.train.common.enums.SeatColumnEnum;
 import com.train.common.enums.SeatTypeEnum;
 import com.train.common.resp.Result;
 import com.train.common.resp.enmus.ResultStatusEnum;
 import com.train.common.resp.exception.BusinessException;
 import com.train.common.utils.IdStrUtils;
+import com.train.common.utils.StringTool;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.slf4j.Logger;
@@ -33,7 +30,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -186,21 +182,21 @@ public class CarriageServiceImpl implements CarriageService {
             criteria.andSeatTypeEqualTo(seatType);
         }
         example.or(criteria);
-        Integer dataCount = (int) carriageMapper.countByExample(example);
         // 分页查询基础数据
-        Integer currentPage = query.getCurrentPage();
-        Integer pageSize = query.getPageSize() >= 5 ? query.getPageSize() : SimplePage.PAGE_20;
-        SimplePage page = new SimplePage(dataCount, currentPage, pageSize);
-        PageHelper.startPage(currentPage, pageSize);
+        if(query.getCurrentPage() != null || query.getPageSize() != null) {
+            Integer currentPage = query.getCurrentPage() == null || query.getCurrentPage() < 1 ? 1 : query.getCurrentPage();
+            Integer pageSize = query.getPageSize() >= 5 ? query.getPageSize() : SimplePage.PAGE_20;
+            PageHelper.startPage(currentPage, pageSize);
+        }
         // 查询数据
         List<TrainCarriage> trainCarriages = carriageMapper.selectByExample(example);
-
+        PageInfo<TrainCarriage> pageInfo = new PageInfo<>(trainCarriages);
         PaginationResultVo<TrainCarriage> result = new PaginationResultVo<>();
-        result.setPageSize(pageSize);
-        result.setCurrentPage(currentPage);
+        result.setPageSize(pageInfo.getPageSize());
+        result.setCurrentPage(pageInfo.getPageNum());
         result.setResult(trainCarriages);
-        result.setPageCount(page.getPageTotal());
-        result.setDataCount(page.getTotalCount());
+        result.setPageCount(pageInfo.getPages());
+        result.setDataCount((int) pageInfo.getTotal());
         return result;
     }
 
@@ -238,13 +234,13 @@ public class CarriageServiceImpl implements CarriageService {
     }
 
     @Override
-    public List<TrainCodeVo> getAllTrainByCode(String trainCode) {
+    public List<TrainVo> getAllTrainByCode(String trainCode) {
         if(trainCode == null){
             trainCode = "";
         }
         List<Train> trains = trainService.selectTrainsByCode(trainCode);
-        List<TrainCodeVo> result = trains.stream().map((item) -> {
-            TrainCodeVo trainCodeVo = new TrainCodeVo();
+        List<TrainVo> result = trains.stream().map((item) -> {
+            TrainVo trainCodeVo = new TrainVo();
             BeanUtils.copyProperties(item, trainCodeVo);
             return trainCodeVo;
         }).toList();
@@ -294,7 +290,7 @@ public class CarriageServiceImpl implements CarriageService {
                 trainSeat.setId(idStrUtils.snowFlakeLong());
                 trainSeat.setTrainCode(trainCode);
                 trainSeat.setCarriageIndex(carriageVoIndex);
-                trainSeat.setCol(String.valueOf(col));
+                trainSeat.setCol(StringTool.numberToStringByEnum(seatType, col));
                 trainSeat.setRow(String.valueOf(row));
                 trainSeat.setCarriageSeatIndex((row - 1) * colCount + col);
                 trainSeat.setSeatType(seatType);
@@ -303,5 +299,27 @@ public class CarriageServiceImpl implements CarriageService {
                 seatService.insertTrainSeat(trainSeat);
             }
         }
+    }
+
+    @Override
+    public List<TrainCarriage> selectAllCarriageWithCondition(TrainCarriage trainCarriage) {
+        TrainCarriageExample trainCarriageExample = new TrainCarriageExample();
+        if(trainCarriage != null){
+            TrainCarriageExample.Criteria criteria = trainCarriageExample.createCriteria();
+            if(trainCarriage.getId() != null){
+                criteria.andIdEqualTo(trainCarriage.getId());
+            }
+            if(trainCarriage.getIndex() != null){
+                criteria.andIndexEqualTo(trainCarriage.getIndex());
+            }
+            if(StrUtil.isNotBlank(trainCarriage.getTrainCode())){
+                criteria.andTrainCodeEqualTo(trainCarriage.getTrainCode());
+            }
+            if(StrUtil.isNotBlank(trainCarriage.getSeatType())){
+                criteria.andSeatTypeEqualTo(trainCarriage.getSeatType());
+            }
+        }
+        List<TrainCarriage> trainCarriages = carriageMapper.selectByExample(trainCarriageExample);
+        return trainCarriages;
     }
 }

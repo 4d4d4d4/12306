@@ -195,7 +195,21 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="selectAllDSeatWithGroupAndOrder"
+            resultType="com.train.common.base.entity.domain.DailyTrainSeat" resultMap="BaseResultMap">
+      SELECT * FROM `daily_train_seat`
+      <where>
+        <if test="trainCode != null">
+         and train_code = #{trainCode}
+        </if>
+        <if test="date != null">
+          and `date` = #{date}
+        </if>
+      </where>
+      GROUP BY `carriage_index`, `id`, `col`, `row`
+      ORDER BY `carriage_index`, `col`, `row`;
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update daily_train_seat
     <set>
       <if test="record.id != null">

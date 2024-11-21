@@ -3,12 +3,13 @@ package com.train.common.resp;
 import com.train.common.resp.enmus.ResultStatusEnum;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 // 结果返回类
 @Data
-public class Result {
+public class Result implements Serializable {
     private Boolean success; // 请求是否成功
 
     private Integer code; // 响应状态码

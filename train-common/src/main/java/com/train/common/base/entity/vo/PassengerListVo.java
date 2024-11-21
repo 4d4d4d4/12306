@@ -28,4 +28,5 @@ import lombok.EqualsAndHashCode;
 @Data
 public class PassengerListVo extends BasePageQuery {
     private String name;
+    private Long memberId;
 }

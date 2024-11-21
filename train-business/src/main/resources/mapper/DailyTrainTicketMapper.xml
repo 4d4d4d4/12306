@@ -272,7 +272,47 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="selectByConditionQuery" resultMap="BaseResultMap">
+      select * from daily_train_ticket
+      <where>
+        <if test="q.date != null">
+          and `date` = #{q.date}
+        </if>
+        <if test="q.start != null and q.start != 'null'">
+          and (`start_pinyin` like concat('%', #{q.startPinyin}, '%') or `start` like concat('%', #{q.start}, '%'))
+        </if>
+        <if test="q.end != null and q.end != 'null'">
+          and (`end` like concat('%', #{q.end}, '%') or `end_pinyin` like concat('%', #{q.endPinyin}, '%'))
+        </if>
+      </where>
+    </select>
+    <select id="queryTicketByCondition" resultMap="BaseResultMap">
+      select * from daily_train_ticket
+      <where>
+        <choose>
+          <when test="q.tickFormModel = 0">
+            <if test="q.departure != null and q.departure != 'null' and q.destination != null and q.destination != 'null'">
+              and (((start_pinyin = #{q.departure} or `start` = #{q.departure}) and (end_pinyin = #{q.destination} or `end` = #{q.destination})})
+            </if>
+          </when>
+          <when test="q.tickFormModel = 1">
+            <if test="q.departure != null and q.departure != 'null' and q.destination != null and q.destination != 'null'">
+              and ((
+                  (start_pinyin = #{q.departure} or `start` = #{q.departure})
+                  and (end_pinyin = #{q.destination} or `end` = #{q.destination}) and `date` = #{q.departureDate})
+              or
+              (
+                  (end_pinyin = #{q.destination} or `end` = #{q.destination})
+                  and (start_pinyin = #{q.departure} or `start` = #{q.departure})) and `date` = #{q.destinationDate} )
+            </if>
+          </when>
+        </choose>
+        <if test="q.highSpeed">
+                  and train_code like concat('G', '%')
+        </if>
+      </where>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update daily_train_ticket
     <set>
       <if test="record.id != null">

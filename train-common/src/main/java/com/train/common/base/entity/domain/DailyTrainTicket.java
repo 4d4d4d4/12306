@@ -3,14 +3,15 @@ package com.train.common.base.entity.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class DailyTrainTicket {
+public class DailyTrainTicket implements Serializable {
     private Long id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
     private String trainCode;
@@ -19,8 +20,8 @@ public class DailyTrainTicket {
 
     private String startPinyin;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm:ss")
     private Date startTime;
 
     private Integer startIndex;
@@ -29,8 +30,8 @@ public class DailyTrainTicket {
 
     private String endPinyin;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm:ss")
     private Date endTime;
 
     private Integer endIndex;
@@ -51,12 +52,12 @@ public class DailyTrainTicket {
 
     private BigDecimal ywPrice;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     public Long getId() {

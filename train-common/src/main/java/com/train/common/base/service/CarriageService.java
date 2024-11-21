@@ -2,10 +2,7 @@ package com.train.common.base.service;
 
 import com.train.common.base.entity.domain.TrainCarriage;
 import com.train.common.base.entity.query.CarriageQuery;
-import com.train.common.base.entity.vo.CarriageIndexVo;
-import com.train.common.base.entity.vo.CarriageVo;
-import com.train.common.base.entity.vo.PaginationResultVo;
-import com.train.common.base.entity.vo.TrainCodeVo;
+import com.train.common.base.entity.vo.*;
 import com.train.common.resp.Result;
 
 import java.util.List;
@@ -47,11 +44,13 @@ public interface CarriageService {
     List<CarriageIndexVo> getAllCarriagesIndex(String trainCode);
 
     // 根据火车编码模糊查询火车
-    List<TrainCodeVo> getAllTrainByCode(String trainCode);
+    List<TrainVo> getAllTrainByCode(String trainCode);
 
     // 根据车厢id获取车厢数据
     TrainCarriage selectByTrainCodeAndCarriageIndex(String trainCode, Integer carriageIndex);
 
     // 根据车厢生成车座
     void createCarriage(CarriageVo carriageVo);
+
+    List<TrainCarriage> selectAllCarriageWithCondition(TrainCarriage trainCarriage);
 }

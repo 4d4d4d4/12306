@@ -43,4 +43,6 @@ public interface SeatService {
     void insertTrainSeat(TrainSeat trainSeat);
 
     void delSeatsByCarriage(String trainCode, Integer carriageVoIndex);
+
+    List<TrainSeat> selectAllSeatByCondition(TrainSeat trainSeat);
 }

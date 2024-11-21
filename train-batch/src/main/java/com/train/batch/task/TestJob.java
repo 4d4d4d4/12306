@@ -1,5 +1,7 @@
 package com.train.batch.task;
 
+import com.train.batch.annotation.TaskDesc;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -26,6 +28,8 @@ import org.slf4j.LoggerFactory;
  * @Copyright Copyright &copy; 2024，. All rights reserved.
  * @Author cqy.
  */
+@DisallowConcurrentExecution
+@TaskDesc("测试任务")
 public class TestJob implements Job {
     private static final Logger logger = LoggerFactory.getLogger(TestJob.class);
     private static int i = 0;

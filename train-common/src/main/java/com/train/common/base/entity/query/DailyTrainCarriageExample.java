@@ -1,11 +1,12 @@
 package com.train.common.base.entity.query;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-public class DailyTrainCarriageExample {
+public class DailyTrainCarriageExample implements Serializable {
     protected String orderByClause;
 
     protected boolean distinct;
@@ -753,13 +754,13 @@ public class DailyTrainCarriageExample {
         }
     }
 
-    public static class Criteria extends GeneratedCriteria {
+    public static class Criteria extends GeneratedCriteria implements Serializable {
         protected Criteria() {
             super();
         }
     }
 
-    public static class Criterion {
+    public static class Criterion implements Serializable {
         private String condition;
 
         private Object value;

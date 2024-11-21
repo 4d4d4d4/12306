@@ -52,6 +52,12 @@ public class PassengerServiceImpl implements PassengerService {
         // 根据身份证号和会员id查重
         String idCard = passengerSaveVo.getIdCard();
         Long currentId = ThreadLocalUtils.getCurrentId();
+        PassengerExample passengerTotalExample = new PassengerExample();
+        passengerTotalExample.or().andMemberIdEqualTo(currentId);
+        long passengerCount = passengerMapper.countByExample(passengerTotalExample);
+        if(passengerCount >= 5){
+            throw new BusinessException(ResultStatusEnum.CODE_601.getCode(), "每个账号最多添加5个乘车人。");
+        }
         PassengerExample passengerExample = new PassengerExample();
         passengerExample.createCriteria().andIdCardEqualTo(idCard);
         passengerExample.createCriteria().andMemberIdEqualTo(currentId);
@@ -79,14 +85,20 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public List<Passenger> listByCondition(PassengerListVo passengerListVo) {
         PassengerExample passengerExample = new PassengerExample();
-        if (!passengerListVo.getName().isEmpty()) {
-            passengerExample.createCriteria().andNameLike("%" + passengerListVo.getName() + "%");
-            passengerExample.setOrderByClause("create_time");
+        Long currentId = ThreadLocalUtils.getCurrentId();
+        if(currentId == null){
+            throw new BusinessException(ResultStatusEnum.CODE_504);
         }
-        PageHelper.startPage(passengerListVo.getPage(), passengerListVo.getSize());
-        List<Passenger> passengers = passengerMapper.selectByExample(passengerExample);
-        passengerExample.clear();
-        return passengers;
+        if (passengerListVo != null && passengerListVo.getName() != null) {
+            if (!passengerListVo.getName().isEmpty()) {
+                passengerExample.createCriteria().andNameLike("%" + passengerListVo.getName() + "%").andMemberIdEqualTo(currentId);
+                passengerExample.setOrderByClause("create_time");
+            }
+            if (passengerListVo.getCurrentPage() != null && passengerListVo.getPageSize() != null) {
+                PageHelper.startPage(passengerListVo.getCurrentPage(), passengerListVo.getPageSize());
+            }
+        }
+        return passengerMapper.selectByExample(passengerExample);
     }
 
     @Override

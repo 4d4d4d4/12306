@@ -78,10 +78,15 @@ public class TrainServiceImpl implements TrainService {
 
         Integer totalCount = (int) trainMapper.countByExample(trainExample);
         Integer currentPage = trainQuery.getCurrentPage();
-        Integer pageSize = trainQuery.getPageSize() == null || trainQuery.getPageSize() < 5 ? SimplePage.PAGE_20 : trainQuery.getPageSize();
+        Integer pageSize = trainQuery.getPageSize();
 
         SimplePage simplePage = new SimplePage(totalCount, currentPage, pageSize);
-        PageHelper.startPage(currentPage, pageSize);
+        if(currentPage != null || pageSize != null) {
+            // 当传入的当前页和大小都为空时默认查找全部数据
+            currentPage = (currentPage == null || currentPage < 1) ? 1 : currentPage;
+            pageSize = pageSize == null || trainQuery.getPageSize() < 5 ? SimplePage.PAGE_20 : trainQuery.getPageSize();
+            PageHelper.startPage(currentPage, pageSize);
+        }
         List<Train> trains = trainMapper.selectByExample(trainExample);
         PaginationResultVo<Train> result = new PaginationResultVo<>();
 

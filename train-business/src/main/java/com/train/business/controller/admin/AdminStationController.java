@@ -1,7 +1,11 @@
 package com.train.business.controller.admin;
 
+import com.train.common.base.entity.domain.DailyTrainStation;
 import com.train.common.base.entity.domain.Station;
+import com.train.common.base.entity.query.DailyStationQuery;
+import com.train.common.base.entity.vo.DailyStationVo;
 import com.train.common.base.entity.vo.StationVo;
+import com.train.common.base.service.DailyStationService;
 import com.train.common.base.service.StationService;
 import com.train.common.base.entity.query.StationQuery;
 import com.train.common.base.entity.vo.PaginationResultVo;
@@ -37,6 +41,8 @@ import java.util.List;
 public class AdminStationController {
     @DubboReference(version = "1.0.0", check = false)
     private StationService stationService;
+    @DubboReference(version = "1.0.0", check = false)
+    private DailyStationService dailyStationService;
 
     @PostMapping("/listByCondition")
     public Result getStationNameList(@RequestBody StationQuery station){
@@ -60,5 +66,24 @@ public class AdminStationController {
     public Result deleteStation(@RequestParam("ids") List<String> ids){
         stationService.deleteStationByIds(ids);
         return Result.ok();
+    }
+
+    // 每日车站数据
+    @PostMapping("/day/listByCondition")
+    public Result queryAllDayStation(@RequestBody DailyStationQuery stationQuery){
+        PaginationResultVo<DailyTrainStation> allStation = dailyStationService.getAllDStation(stationQuery);
+        return Result.ok().data("result", allStation);
+    }
+    @PostMapping("/day/addDStation")
+    public Result addDStation(@RequestBody DailyStationVo vo){
+        return dailyStationService.addDStation(vo);
+    }
+    @PostMapping("/day/updateDStation")
+    public Result updateDStation(@RequestBody DailyTrainStation station){
+        return dailyStationService.updateDStation(station);
+    }
+    @GetMapping("/day/batchDelDStation")
+    public Result batchDelDStation(@RequestParam("ids") List<Long> ids){
+        return dailyStationService.batchDelStation(ids);
     }
 }

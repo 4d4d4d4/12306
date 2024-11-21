@@ -36,23 +36,23 @@ public class TrainQuery extends BaseQuery{
 
     private String startPinyin;
 
-    @JsonFormat(pattern = "hh:mm:ss")
-    @DateTimeFormat(pattern = "hh:mm:ss")
+    @JsonFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm:ss")
     private Date startTime;
 
     private String end; // 终点站
 
     private String endPinyin;
 
-    @JsonFormat(pattern = "hh:mm:ss")
-    @DateTimeFormat(pattern = "hh:mm:ss")
+    @JsonFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm:ss")
     private Date endTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 }

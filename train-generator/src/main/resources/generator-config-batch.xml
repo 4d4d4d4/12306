@@ -41,6 +41,16 @@
                              targetPackage="com.train.batch.mapper"
                              type="XMLMAPPER"/>
 
-        <table tableName="batch" domainObjectName="Batch"/>
+        <table tableName="qrtz_blob_triggers" domainObjectName="BlobTriggers"/>
+        <table tableName="qrtz_calendars" domainObjectName="Calendars"/>
+        <table tableName="qrtz_cron_triggers" domainObjectName="CronTriggers"/>
+        <table tableName="qrtz_fired_triggers" domainObjectName="FiredTriggers"/>
+        <table tableName="qrtz_job_details" domainObjectName="JobDetails"/>
+        <table tableName="qrtz_locks" domainObjectName="Locks"/>
+        <table tableName="qrtz_paused_trigger_grps" domainObjectName="PausedTriggerGrps"/>
+        <table tableName="qrtz_scheduler_state" domainObjectName="SchedulerState"/>
+        <table tableName="qrtz_simple_triggers" domainObjectName="SimpleTriggers"/>
+        <table tableName="qrtz_simprop_triggers" domainObjectName="SimpropTriggers"/>
+        <table tableName="qrtz_triggers" domainObjectName="Triggers"/>
     </context>
 </generatorConfiguration>

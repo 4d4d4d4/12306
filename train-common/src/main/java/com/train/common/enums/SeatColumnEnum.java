@@ -24,26 +24,34 @@ import com.alibaba.fastjson.JSON;
  */
 public enum SeatColumnEnum {
     // 一等座列号
-    YDZ_A("A","一等座A列", "1"),
-    YDZ_B("B","一等座B列", "1"),
-    YDZ_C("C","一等座C列", "1"),
-    YDZ_F("F","一等座F列", "1"),
+    YDZ_A("A","一等座A列", "1",1),
+    YDZ_C("C","一等座C列", "1",2),
+    YDZ_D("D","一等座D列", "1",3),
+    YDZ_F("F","一等座F列", "1",4),
     // 二等座列号
-    EDZ_A("A","二等座A列", "2"),
-    EDZ_B("B","二等座B列", "2"),
-    EDZ_C("C","二等座C列", "2"),
-    EDZ_D("D","二等座D列", "2"),
-    EDZ_F("F","二等座F列", "2"),
+    EDZ_A("A","二等座A列", "2",1),
+    EDZ_B("B","二等座B列", "2",2),
+    EDZ_C("C","二等座C列", "2",3),
+    EDZ_D("D","二等座D列", "2",4),
+    EDZ_F("F","二等座F列", "2",5),
     // 软卧列号
-    RW_A("A", "软卧下铺", "3"),
-    RW_B("B", "软卧上铺", "3"),
+    RW_A("A", "软卧下铺", "3",1),
+    RW_B("B", "软卧上铺", "3",2),
     // 硬卧列号
-    YW_A("A", "硬卧下铺", "4"),
-    YW_B("B", "硬卧中铺", "4"),
-    YW_C("C", "硬卧上铺", "4");
+    YW_A("A", "硬卧下铺", "4",1),
+    YW_B("B", "硬卧中铺", "4",2),
+    YW_C("C", "硬卧上铺", "4",3);
     private String code; // 座位前缀(编号)
     private String desc; // 注释
     private String type; // 对应的车厢类型编码 SeatTypeEnum
+    private int number; // 对应的座位序号
+
+    SeatColumnEnum(String code, String desc, String type, int number) {
+        this.code = code;
+        this.desc = desc;
+        this.type = type;
+        this.number = number;
+    }
 
     SeatColumnEnum(String code, String desc, String type) {
         this.code = code;
@@ -73,6 +81,10 @@ public enum SeatColumnEnum {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getNumber() {
+        return number;
     }
 
     @Override

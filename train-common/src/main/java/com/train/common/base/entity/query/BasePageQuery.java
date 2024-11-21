@@ -27,8 +27,8 @@ import lombok.Data;
 @Data
 public class BasePageQuery {
     @NotNull(message = "当前页不能为空")
-    private Integer page;
+    private Integer currentPage;
     @NotNull(message = "页大小不能为空")
     @Max(value = 20, message = "每页数据不得超过20条")
-    private Integer size;
+    private Integer pageSize;
 }

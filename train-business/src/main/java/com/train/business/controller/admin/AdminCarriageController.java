@@ -1,12 +1,13 @@
 package com.train.business.controller.admin;
 
+import cn.hutool.core.util.StrUtil;
+import com.train.common.base.entity.domain.DailyTrainCarriage;
 import com.train.common.base.entity.domain.TrainCarriage;
 import com.train.common.base.entity.query.CarriageQuery;
-import com.train.common.base.entity.vo.CarriageIndexVo;
-import com.train.common.base.entity.vo.CarriageVo;
-import com.train.common.base.entity.vo.PaginationResultVo;
-import com.train.common.base.entity.vo.TrainCodeVo;
+import com.train.common.base.entity.query.DailyCarriageQuery;
+import com.train.common.base.entity.vo.*;
 import com.train.common.base.service.CarriageService;
+import com.train.common.base.service.DailyCarriageService;
 import com.train.common.base.service.TrainService;
 import com.train.common.resp.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -40,8 +41,9 @@ import java.util.Map;
 public class AdminCarriageController {
     @DubboReference(version = "1.0.0", check = false)
     private CarriageService carriageService;
+
     @DubboReference(version = "1.0.0", check = false)
-    private TrainService trainService;
+    private DailyCarriageService dailyCarriageService;
 
     @PostMapping("/addCarriage")
     public Result batchAdd(@RequestBody List<CarriageVo> carriageVoList){
@@ -49,8 +51,8 @@ public class AdminCarriageController {
         return Result.ok().message(msg);
     }
 
-    @PostMapping("/deleteCarriage")
-    public Result batchDelete(@RequestBody List<Long> ids){
+    @GetMapping("/deleteCarriage")
+    public Result batchDelete(@RequestParam("ids") List<Long> ids){
         carriageService.batchDelete(ids);
         return Result.ok();
     }
@@ -68,7 +70,7 @@ public class AdminCarriageController {
 
     /**
      * 根据火车code查询火车车厢情况
-     * @param trainCode 火车编码
+     * @param reqMap 火车编码
      * @return
      */
     @PostMapping("/getCarriagesIndex")
@@ -80,14 +82,16 @@ public class AdminCarriageController {
 
     /**
      * 根据火车编码模糊查询火车
-     * @param trainCode
+     * @param reqMap
      * @return
      */
     @PostMapping("/getTrainByCode")
     public Result getTrainByCode( @RequestBody Map<String, String> reqMap){
         String trainCode = reqMap.get("trainCode");
-
-       List<TrainCodeVo> result =  carriageService.getAllTrainByCode(trainCode);
+        if (StrUtil.isBlank(trainCode) || trainCode.equals("null")){
+            trainCode = "";
+        }
+       List<TrainVo> result =  carriageService.getAllTrainByCode(trainCode);
         return Result.ok().data("result", result);
     }
     @PostMapping("/creatSeat")
@@ -95,4 +99,39 @@ public class AdminCarriageController {
         carriageService.createCarriage(carriageVo);
         return Result.ok();
     }
+    @PostMapping("/day/createSeat")
+    public Result createDSeatByDCarriage(@RequestBody DailyCarriageVo carriageVo){
+        dailyCarriageService.createCarriage(carriageVo);
+        return Result.ok();
+    }
+
+    /**
+     * 每日数据接口
+     */
+    @PostMapping("/day/listByCondition")
+    public Result selectDCarriagesByConditionWithPage(@RequestBody DailyCarriageQuery query){
+        PaginationResultVo<DailyTrainCarriage> result = dailyCarriageService.selectAllByConditionWithPage(query);
+        return Result.ok().data("result", result);
+    }
+    @GetMapping("/day/batchDelCarriage")
+    public Result batchDelDCarriage(@RequestParam("ids") List<Long> ids){
+        return dailyCarriageService.batchDelCarriage(ids);
+    }
+    @PostMapping("/day/addDCarriage")
+    public Result addDCarriage(@RequestBody DailyCarriageVo carriageVo){
+        return dailyCarriageService.addDCarriage(carriageVo);
+    }
+    @PostMapping("/day/updateDCarriage")
+    public Result updateDCarriage(@RequestBody DailyTrainCarriage carriage){
+        return dailyCarriageService.updateDCarriage(carriage);
+    }
+    /**
+     * 生成某日的每日车厢表
+     */
+    @PostMapping("/day/createDCarriage")
+    public Result createDCarriage(@RequestBody DailyCarriageVo vo){
+        return dailyCarriageService.creatDayCarriage(vo);
+    }
+
+
 }
