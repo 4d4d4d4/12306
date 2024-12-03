@@ -3,6 +3,9 @@ package com.train.common.base.entity.req;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -33,16 +36,27 @@ import java.util.List;
 @Data
 public class TicketOrderReq implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
+    @NotNull(message = "【票信息】不能为空")
     private Long trainTicketId; // 票id
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "【日期】不能为空")
     private Date date ; // 日期
 
+    @NotBlank(message = "【火车编码】不能为空")
     private String trainCode; // 当前票的火车编码
+
+    @NotBlank(message = "【初始站】不能为空")
     private String start; // 当前票初始站
+
+    @NotBlank(message = "【终点站】不能为空")
     private String end; // 当前票终点站
+
+    @NotEmpty(message = "【购票详情列表】不能为空")
     private List<PassengerTicketReq> tickets; // 购票详情
+
+    @NotBlank(message = "【验证码】不能为空")
     private String imageCode; // 验证码
 
     private String lineNumber; // 队列序号

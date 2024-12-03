@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  * @Author cqy.
  */
 @DisallowConcurrentExecution
-@TaskDesc("每日自动化生成火车任务")
+@TaskDesc(value = "每日自动化生成火车任务",order = 1)
 @Component
 public class DailyTrainTask implements Job {
     private static final Logger log = LoggerFactory.getLogger(DailyTrainTask.class);
@@ -115,7 +115,7 @@ public class DailyTrainTask implements Job {
             time = time.offset(DateField.DAY_OF_YEAR, 1); // 生成下一天数据
         }
         log.info("生成每日火车数据任务结束");
-
+        context.getJobDetail().getJobDataMap().put("taskResult",true);
     }
 
     public static void main(String[] args) {

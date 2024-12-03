@@ -321,4 +321,16 @@ public class DailyCarriageServiceImpl extends BaseService implements DailyCarria
         return dailyCarriageMapper.selectByExample(example);
     }
 
+    @Override
+    public int delDCarriageBeforeNow(Date date) {
+        if(date == null || date.after(DateTime.now())){
+            return 0;
+        }
+        DailyTrainCarriageExample example = new DailyTrainCarriageExample();
+        DailyTrainCarriageExample.Criteria criteria = example.createCriteria();
+        criteria.andDateLessThan(date);
+        int count = dailyCarriageMapper.deleteByExample(example);
+        return count;
+    }
+
 }

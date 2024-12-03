@@ -1,5 +1,6 @@
 package com.train.business.controller.admin;
 
+import com.train.common.aspect.annotation.CacheEvictByPrefix;
 import com.train.common.base.entity.domain.DailyTrainStation;
 import com.train.common.base.entity.domain.Station;
 import com.train.common.base.entity.query.DailyStationQuery;
@@ -9,6 +10,7 @@ import com.train.common.base.service.DailyStationService;
 import com.train.common.base.service.StationService;
 import com.train.common.base.entity.query.StationQuery;
 import com.train.common.base.entity.vo.PaginationResultVo;
+import com.train.common.entity.SystemConstants;
 import com.train.common.resp.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,7 @@ public class AdminStationController {
     private DailyStationService dailyStationService;
 
     @PostMapping("/listByCondition")
+
     public Result getStationNameList(@RequestBody StationQuery station){
         PaginationResultVo<Station> allStation = stationService.getAllStation(station);
 
@@ -52,17 +55,20 @@ public class AdminStationController {
     }
 
     @PostMapping("/addStation")
+    @CacheEvictByPrefix(prefix = SystemConstants.CACHE_STATION_PREFIX)
     public Result addStation(@RequestBody List<StationVo> list){
         stationService.addStationList(list);
         return Result.ok();
     }
     @PostMapping("/editStation")
+    @CacheEvictByPrefix(prefix = SystemConstants.CACHE_STATION_PREFIX)
     public Result editStation(@RequestBody List<Station> list){
         stationService.editStationList(list);
         return Result.ok();
     }
 
     @GetMapping("/deleteStation")
+    @CacheEvictByPrefix(prefix = SystemConstants.CACHE_STATION_PREFIX)
     public Result deleteStation(@RequestParam("ids") List<String> ids){
         stationService.deleteStationByIds(ids);
         return Result.ok();

@@ -47,7 +47,7 @@ import java.util.List;
  * @Copyright Copyright &copy; 2024，. All rights reserved.
  * @Author cqy.
  */
-@TaskDesc("生成每日火车车站数据任务")
+@TaskDesc(value = "生成每日火车车站数据任务",order = 0)
 @DisallowConcurrentExecution
 @Component
 public class DailyTrainStationTask implements Job {
@@ -97,6 +97,8 @@ public class DailyTrainStationTask implements Job {
         });
 
         logger.info("每日火车车站任务结束");
+        context.getJobDetail().getJobDataMap().put("taskResult",true);
+
     }
 
 }

@@ -6,7 +6,9 @@ import com.train.common.base.entity.domain.DailyTrainSeat;
 import com.train.common.base.entity.resp.CarriageSeatResp;
 import com.train.common.base.service.DailySeatService;
 import com.train.common.base.service.SeatService;
+import com.train.common.entity.SystemConstants;
 import com.train.common.resp.Result;
+import com.train.common.utils.CacheClient;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <dl>
@@ -48,6 +51,9 @@ public class TrainSeatController {
     @Autowired
     private DailySeatService dailySeatService;
 
+    @Autowired
+    private CacheClient cacheClient;
+
     /**
      * 根据查询条件查询所有车座情况
      * @param trainCode 火车编码
@@ -65,7 +71,8 @@ public class TrainSeatController {
         DailyTrainSeat dailyTrainSeat = new DailyTrainSeat();
         dailyTrainSeat.setTrainCode(trainCode);
         dailyTrainSeat.setDate(date);
-        List<DailyTrainSeat> dailyTrainSeats = dailySeatService.selectDSeatByConditionExample(dailyTrainSeat);
+        String cacheKey = SystemConstants.CACHE_SEAT_PREFIX + SystemConstants.CACHE_SEAT_QUERY_ALL_SEAT;
+        List<DailyTrainSeat> dailyTrainSeats =  cacheClient.queryListWithLocalExpire(cacheKey, dailyTrainSeat, DailyTrainSeat.class, param -> dailySeatService.selectDSeatByConditionExample(dailyTrainSeat), 2L, TimeUnit.MINUTES);
         for (DailyTrainSeat trainSeat : dailyTrainSeats) {
                 String key = "车厢" + trainSeat.getCarriageIndex();
             CarriageSeatResp carriageSeatResp = result.get(key);

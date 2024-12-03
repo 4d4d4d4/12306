@@ -41,4 +41,6 @@ public interface DailyStationService {
     Result batchDelStation(List<Long> ids);
 
     List<DailyTrainStation> selectByIndexQuery(String trainCode, Date currentDate , Integer startIndex, Integer endIndex);
+
+    Integer selectIndexByNameQuery(String trainCode, Date date, String namePy);
 }

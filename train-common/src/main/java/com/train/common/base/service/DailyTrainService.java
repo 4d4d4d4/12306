@@ -1,11 +1,13 @@
 package com.train.common.base.service;
 
 import com.train.common.base.entity.domain.DailyTrain;
+import com.train.common.base.entity.domain.DailyTrainTicket;
 import com.train.common.base.entity.query.DailyTrainQuery;
 import com.train.common.base.entity.vo.DailyTrainVo;
 import com.train.common.base.entity.vo.PaginationResultVo;
 import com.train.common.resp.Result;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,4 +47,6 @@ public interface DailyTrainService {
     void batchInsertDTrainData(List<DailyTrain> insertList);
 
     Result batchInsertDTrain(DailyTrainQuery query);
+
+    int delDTrainBeforeNow(Date date);
 }

@@ -2,6 +2,8 @@ package com.train.business.mapper;
 
 import com.train.common.base.entity.domain.DailyTrainTicket;
 import com.train.common.base.entity.query.DailyTrainTicketExample;
+
+import java.util.Date;
 import java.util.List;
 
 import com.train.common.base.entity.query.TicketQuery;
@@ -36,4 +38,5 @@ public interface DailyTrainTicketMapper {
 
     List<DailyTrainTicket> queryTicketByCondition(@Param("q") UTrainTicketQuery query);
 
+    void updateTicketResidueCount(@Param("trainCode") String trainCode, @Param("date") Date date, @Param("seatType") String seatType, @Param("minStartIndex") Integer minStartIndex, @Param("maxStartIndex") Integer maxStartIndex, @Param("minEndIndex") Integer minEndIndex, @Param("maxEndIndex") Integer maxEndIndex);
 }

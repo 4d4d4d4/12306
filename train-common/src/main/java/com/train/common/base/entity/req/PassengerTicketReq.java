@@ -29,13 +29,13 @@ import java.io.Serializable;
 @Data
 public class PassengerTicketReq implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
+    private Long passengerId; // 乘车人ID
 
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long memberId;
+    private Long memberId; // 会员ID
 
-    private String passengerName;
+    private String passengerName; // 乘车人姓名
     private String passengerType; // 1-成人 2-儿童 3-学生
-    private String seat;  // 选择的车位 例如 D1 D列 1
+    private String seat;  // 选择的车位 例如 D1 D列 1 c2
     private String seatTypeCode; // 1-一等座 2-二等座 3-软卧 4-硬卧
 }

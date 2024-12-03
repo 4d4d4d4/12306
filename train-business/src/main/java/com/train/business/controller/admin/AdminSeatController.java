@@ -1,6 +1,7 @@
 package com.train.business.controller.admin;
 
 import cn.hutool.core.util.StrUtil;
+import com.train.common.aspect.annotation.CacheEvictByPrefix;
 import com.train.common.base.entity.domain.DailyTrainSeat;
 import com.train.common.base.entity.domain.TrainCarriage;
 import com.train.common.base.entity.domain.TrainSeat;
@@ -10,6 +11,7 @@ import com.train.common.base.entity.vo.*;
 import com.train.common.base.service.CarriageService;
 import com.train.common.base.service.DailySeatService;
 import com.train.common.base.service.SeatService;
+import com.train.common.entity.SystemConstants;
 import com.train.common.resp.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +51,7 @@ public class AdminSeatController {
     private DailySeatService dSeatService;
 
     @PostMapping("/addSeat")
+    @CacheEvictByPrefix(prefix = SystemConstants.CACHE_STATION_PREFIX)
     public Result batchAddSeat(@RequestBody SeatVo seatVo){
         Integer carriageIndex = seatVo.getCarriageIndex();
         String trainCode = seatVo.getTrainCode();
@@ -60,11 +63,13 @@ public class AdminSeatController {
         return seatService.addSeat(trainCarriage, seatVo);
     }
     @GetMapping("/delSeat")
+    @CacheEvictByPrefix(prefix = SystemConstants.CACHE_STATION_PREFIX)
     public Result delSeat(@RequestParam("ids") List<Long> ids){
         seatService.delSeats(ids);
         return Result.ok();
     }
     @PostMapping("/updateSeat")
+    @CacheEvictByPrefix(prefix = SystemConstants.CACHE_STATION_PREFIX)
     public  Result editSeat(@RequestBody TrainSeat trainSeat){
         Integer carriageIndex = trainSeat.getCarriageIndex();
         String trainCode = trainSeat.getTrainCode();

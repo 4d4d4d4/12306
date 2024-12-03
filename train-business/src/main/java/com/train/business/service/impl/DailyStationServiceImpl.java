@@ -54,20 +54,21 @@ public class DailyStationServiceImpl implements DailyStationService {
     private DailyTrainStationMapper dStationMapper;
     @Autowired
     private IdStrUtils idStrUtils;
+
     @Override
     public PaginationResultVo<DailyTrainStation> getAllDStation(DailyStationQuery stationQuery) {
-        if(stationQuery == null){
+        if (stationQuery == null) {
             throw new BusinessException(ResultStatusEnum.CODE_500);
         }
         PaginationResultVo<DailyTrainStation> resultVo = new PaginationResultVo<>();
         // 分页条件
         Integer pageSize = stationQuery.getPageSize();
         Integer currentPage = stationQuery.getCurrentPage();
-        if(pageSize != null || currentPage != null){
-            if(pageSize == null || pageSize < 5){
+        if (pageSize != null || currentPage != null) {
+            if (pageSize == null || pageSize < 5) {
                 pageSize = SimplePage.PAGE_20;
             }
-            if(currentPage == null || currentPage < 1){
+            if (currentPage == null || currentPage < 1) {
                 currentPage = 1;
             }
             PageHelper.startPage(currentPage, pageSize);
@@ -77,15 +78,15 @@ public class DailyStationServiceImpl implements DailyStationService {
         String trainCode = stationQuery.getTrainCode();
         DailyTrainStationExample dailyTrainStationExample = new DailyTrainStationExample();
         DailyTrainStationExample.Criteria criteria = dailyTrainStationExample.createCriteria();
-        if(date != null){
+        if (date != null) {
             criteria.andDateEqualTo(date);
         }
-        if(trainCode != null){
-            if(Objects.equals(trainCode, "null")) {
+        if (trainCode != null) {
+            if (Objects.equals(trainCode, "null")) {
                 trainCode = "";
             }
             criteria.andTrainCodeLike(StringTool.concat(trainCode));
-         }
+        }
         List<DailyTrainStation> dailyTrainStations = dStationMapper.selectByExample(dailyTrainStationExample);
         PageInfo<DailyTrainStation> page = new PageInfo<>(dailyTrainStations);
 
@@ -100,15 +101,15 @@ public class DailyStationServiceImpl implements DailyStationService {
 
     @Override
     public Result addDStation(DailyStationVo vo) {
-        if(vo == null){
+        if (vo == null) {
             return Result.error().message("添加失败，数据为空");
         }
         DailyTrainStation dailyTrainStation = new DailyTrainStation();
         BeanUtils.copyProperties(vo, dailyTrainStation);
-        if(dailyTrainStation.getCreateTime() == null){
+        if (dailyTrainStation.getCreateTime() == null) {
             dailyTrainStation.setCreateTime(new Date());
         }
-        if(dailyTrainStation.getUpdateTime() == null){
+        if (dailyTrainStation.getUpdateTime() == null) {
             dailyTrainStation.setUpdateTime(new Date());
         }
         dailyTrainStation.setId(idStrUtils.snowFlakeLong());
@@ -118,7 +119,7 @@ public class DailyStationServiceImpl implements DailyStationService {
 
     @Override
     public Result updateDStation(DailyTrainStation station) {
-        if(station == null || station.getId() == null){
+        if (station == null || station.getId() == null) {
             return Result.error().message("修改失败，数据为空");
         }
         station.setUpdateTime(new Date());
@@ -128,7 +129,7 @@ public class DailyStationServiceImpl implements DailyStationService {
 
     @Override
     public Result batchDelStation(List<Long> ids) {
-        if(ids.isEmpty()){
+        if (ids.isEmpty()) {
             return Result.error().message("删除集合为空，请检查操作是否有误");
         }
         DailyTrainStationExample dailyTrainStationExample = new DailyTrainStationExample();
@@ -139,10 +140,11 @@ public class DailyStationServiceImpl implements DailyStationService {
 
     /**
      * 根据火车编码，日期，开始站，终点站查询包括开始站-终点站的所有途径站
-     * @param trainCode 根据火车编码
-     * @param date 日期
+     *
+     * @param trainCode  根据火车编码
+     * @param date       日期
      * @param startIndex 开始站
-     * @param endIndex 终点站
+     * @param endIndex   终点站
      * @return
      */
     @Override
@@ -156,8 +158,24 @@ public class DailyStationServiceImpl implements DailyStationService {
         dailyTrainStationExample.setOrderByClause("`index` asc");
         List<DailyTrainStation> dailyTrainStations = dStationMapper.selectByExample(dailyTrainStationExample);
         log.info("根据火车编码：{}，日期：{}，开始站：{}，终点站：{}查询到的结果是{}"
-        ,trainCode,date,startIndex, endIndex, JSON.toJSONString(dailyTrainStations));
+                , trainCode, date, startIndex, endIndex, JSON.toJSONString(dailyTrainStations));
         return dailyTrainStations;
+    }
+
+    @Override
+    public Integer selectIndexByNameQuery(String trainCode, Date date, String namePy) {
+        DailyTrainStationExample dailyTrainStationExample = new DailyTrainStationExample();
+        dailyTrainStationExample
+                .or()
+                .andTrainCodeEqualTo(trainCode)
+                .andDateEqualTo(date)
+                .andNameEqualTo(namePy);
+        dailyTrainStationExample
+                .or()
+                .andTrainCodeEqualTo(trainCode)
+                .andDateEqualTo(date)
+                .andNamePinyinEqualTo(namePy);
+        return dStationMapper.selectByExample(dailyTrainStationExample).get(0).getIndex();
     }
 
 

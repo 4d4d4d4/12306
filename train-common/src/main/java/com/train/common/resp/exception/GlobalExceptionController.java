@@ -1,8 +1,10 @@
 package com.train.common.resp.exception;
 
+import cn.hutool.core.util.StrUtil;
 import com.train.common.resp.Result;
 import com.train.common.resp.enmus.ResultStatusEnum;
 import io.lettuce.core.RedisException;
+import io.seata.core.context.RootContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,7 +37,14 @@ public class GlobalExceptionController {
 
     // 无请求处理器异常
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<Result> Exception(Exception e, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Result> Exception(Exception e, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        if(StrUtil.isNotBlank(RootContext.getXID())){
+            e.printStackTrace();
+            logger.info("分布式事务异常:{},seata全局ID:{}",e.getMessage(), RootContext.getXID());
+            throw e;
+        }
+
         Result error = Result.error();
         e.printStackTrace();
         if (e instanceof NoHandlerFoundException) {

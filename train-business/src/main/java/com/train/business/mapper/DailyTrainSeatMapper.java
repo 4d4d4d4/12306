@@ -30,5 +30,5 @@ public interface DailyTrainSeatMapper {
 
     int updateByPrimaryKey(DailyTrainSeat record);
 
-    List<DailyTrainSeat> selectAllDSeatWithGroupAndOrder(@Param("trainCode") String trainCode, @Param("date")Date date);
+    List<DailyTrainSeat> selectAllDSeatWithGroupAndOrder(@Param("trainCode") String trainCode, @Param("date")Date date, @Param("seatType") String seatType);
 }

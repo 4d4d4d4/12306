@@ -5,7 +5,11 @@ import com.train.common.enums.SeatColumnEnum;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * <dl>
@@ -35,7 +39,8 @@ public class StringTool {
     private static final Map<String, String> numberToStringMapByEnum = new HashMap<>();
     // 根据SeatColumnEnum枚举将座位编码转化为对应的座位序号 key为(座位类型_座位编码) value为(座位序号)
     private static final Map<String, Integer> stringToNumberMapByEnum = new HashMap<>();
-    static{
+
+    static {
         for (int i = 0; i < 26; i++) {
             char letter = (char) ('A' + i);
             letterToNumberMap.put(String.valueOf(letter), i + 1);
@@ -48,11 +53,14 @@ public class StringTool {
             stringToNumberMapByEnum.put(key2, value.getNumber());
         }
     }
-    public static String concat(String field){
+
+    public static String concat(String field) {
         return "%" + field + "%";
     }
+
     /**
      * 将字母转换为数字
+     *
      * @param letter 输入的字母
      * @return 对应的数字
      * @throws IllegalArgumentException 如果输入的字母无效
@@ -67,6 +75,7 @@ public class StringTool {
 
     /**
      * 将数字转换为字母
+     *
      * @param number 输入的数字
      * @return 对应的字母
      * @throws IllegalArgumentException 如果输入的数字无效
@@ -81,36 +90,32 @@ public class StringTool {
 
     /**
      * 将类型及座位序号转化为对应的座位类型编码
+     *
      * @param type
      * @param number
      * @return 可能返回null
      */
-    public static String numberToStringByEnum( String type,int number){
+    public static String numberToStringByEnum(String type, int number) {
         return numberToStringMapByEnum.get(type + "_" + number);
     }
 
-    public static Integer stringToNumberByEnum(String type, String code){
+    public static Integer stringToNumberByEnum(String type, String code) {
         return stringToNumberMapByEnum.get(type + "_" + code);
     }
 
-    public static String timeToStringByFormat(DateTime date){
+    public static String timeToStringByFormat(DateTime date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return simpleDateFormat.format(date);
     }
-    public static String timeToStringByFormat(DateTime date, String pattern){
+
+    public static String timeToStringByFormat(DateTime date, String pattern) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.format(date);
     }
-    public static void main(String[] args){
-        String i= numberToLetter(1);
-        String t = numberToLetter(26);
-        System.out.println(i);
-        System.out.println(t);
 
-    }
 
     public static String front(String field) {
-       return field + "%";
+        return field + "%";
     }
 
     public static String formatRow(Integer row) {
@@ -120,6 +125,7 @@ public class StringTool {
         // 格式化为两位数字，补零
         return String.format("%02d", row);
     }
+
     public static String formatRow(String row) {
         if (row == null || row.isEmpty()) {
             throw new IllegalArgumentException("Row cannot be null or empty");
@@ -132,4 +138,49 @@ public class StringTool {
             throw new IllegalArgumentException("Row must be a numeric string", e);
         }
     }
+
+    /**
+     * 判断某个对象集合中某个属性值是否全部相同
+     *
+     * @param objectList 测试的集合
+     * @param function   对象的属性 例如 Object::getName()
+     * @param <T>
+     * @param <R>
+     * @return true-全部相同 false-有不同的
+     */
+    public static <T, R> boolean filedValueIsSameInObjList(List<T> objectList, Function<T, R> function) {
+        if (objectList.isEmpty()) {
+            return false;
+        }
+        Set<R> collect = objectList.stream().map(function).collect(Collectors.toSet());
+        return collect.size() <= 1;
+    }
+
+    /**
+     * 将字符串str中索引由start-end的内容替换为目标字符replacement
+     *
+     * @param str         原始字符串
+     * @param start       起始索引
+     * @param end         终止索引
+     * @param replacement 目标字符
+     * @return 替换后的字符串
+     */
+    public static String replaceSubstring(String str, int start, int end, char replacement) {
+        if (start < 0 || start >= str.length() || end < 0 || end > str.length() || start > end) {
+            throw new IllegalArgumentException("Invalid range");
+        }
+        StringBuilder sb = new StringBuilder(str);
+        for (int i = start; i < end; i++) {
+            sb.setCharAt(i, replacement);
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        String s = "000";
+        int start = 2;
+        int end = 3;
+        System.out.println(replaceSubstring(s, start - 1, end - 1, '1'));
+    }
+
 }

@@ -2,6 +2,8 @@ package com.train.common.enums;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.Arrays;
+
 /**
  * <dl>
  * <dt><b>类功能概述</b></dt>
@@ -58,6 +60,10 @@ public enum SeatColumnEnum {
         this.desc = desc;
         this.type = type;
     }
+    public static int getColCountBySeatTypeCode(String seatTypeCode){
+        long count = Arrays.stream(SeatColumnEnum.values()).filter((item) -> item.getType().equals(seatTypeCode)).count();
+        return (int) count;
+    }
 
     public String getCode() {
         return code;
@@ -97,9 +103,11 @@ public enum SeatColumnEnum {
     }
 
     public static void main(String[] args){
-        SeatColumnEnum[] values = SeatColumnEnum.values();
-        for(SeatColumnEnum value : values){
-            System.out.println(value);
-        }
+//        SeatColumnEnum[] values = SeatColumnEnum.values();
+//        for(SeatColumnEnum value : values){
+//            System.out.println(value);
+//        }
+        int colCountBySeatTypeCode = SeatColumnEnum.getColCountBySeatTypeCode("2");
+        System.out.println(colCountBySeatTypeCode);
     }
 }

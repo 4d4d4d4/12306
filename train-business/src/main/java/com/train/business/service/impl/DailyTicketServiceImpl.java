@@ -1,5 +1,6 @@
 package com.train.business.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
@@ -139,6 +140,46 @@ public class DailyTicketServiceImpl implements DailyTicketService {
         Integer tickFormModel = query.getTickFormModel();
         List<DailyTrainTicket> dailyTrainTickets = dailyTrainTicketMapper.queryTicketByCondition(query);
         return  consolidatedTicket(dailyTrainTickets, tickFormModel);
+    }
+
+     @Override
+    public DailyTrainTicket selectDTrainByUniqueIndex(Date date, String trainCode, String start, String end) {
+        log.info("开始根据唯一索引查询每日车票数据。date:{}, trainCode:{}, start:{}, end:{}",date,trainCode,start,end);
+        if(StrUtil.isBlank(trainCode) || StrUtil.isBlank(start) || StrUtil.isBlank(end) || date == null){
+            log.info("根据唯一索引查询每日车票数据失败，有关键数据为空");
+            return null;
+        }
+        DailyTrainTicketExample dailyTrainTicketExample = new DailyTrainTicketExample();
+        DailyTrainTicketExample.Criteria criteria = dailyTrainTicketExample.createCriteria();
+        criteria.andDateEqualTo(date).andTrainCodeEqualTo(trainCode).andStartEqualTo(start).andEndEqualTo(end);
+         List<DailyTrainTicket> dailyTrainTickets = dailyTrainTicketMapper.selectByExample(dailyTrainTicketExample);
+         if(dailyTrainTickets.size() != 1){
+             log.info("根据唯一键查找出多个数据！：【{}】", JSON.toJSONString(dailyTrainTickets));
+         }
+         return dailyTrainTickets.get(0);
+    }
+
+    @Override
+    public void updateRecord(DailyTrainTicket dailyTrainTicket) {
+        dailyTrainTicketMapper.updateByPrimaryKey(dailyTrainTicket);
+    }
+
+    @Override
+    public void updateTicketResidueCount(String trainCode, Date date, String seatType, Integer minStartIndex, Integer maxStartIndex, Integer minEndIndex, Integer maxEndIndex) {
+        log.info("批量修改车票余量：【{}、{}、{}】",trainCode,date,seatType);
+        dailyTrainTicketMapper.updateTicketResidueCount(trainCode,date,seatType,minStartIndex,maxStartIndex,minEndIndex,maxEndIndex);
+    }
+
+    @Override
+    public int delDTicketBeforeNow(Date date) {
+        if(date == null || date.after(DateTime.now())){
+            return 0;
+        }
+        DailyTrainTicketExample example = new DailyTrainTicketExample();
+        DailyTrainTicketExample.Criteria criteria = example.createCriteria();
+        criteria.andDateLessThan(date);
+        int count = dailyTrainTicketMapper.deleteByExample(example);
+        return count;
     }
 
     /**

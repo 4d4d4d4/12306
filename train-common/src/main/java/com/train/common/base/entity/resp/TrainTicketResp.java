@@ -1,6 +1,8 @@
 package com.train.common.base.entity.resp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -31,6 +33,9 @@ import java.util.List;
  */
 @Data
 public class TrainTicketResp implements Serializable {
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")

@@ -5,7 +5,7 @@ server:
 logging:
   level:
     root: info
-    com.train.batch.mapper: trace
+#    com.train.batch.mapper: trace
 spring:
   config:
     import: optional:classpath:/application-common.properties

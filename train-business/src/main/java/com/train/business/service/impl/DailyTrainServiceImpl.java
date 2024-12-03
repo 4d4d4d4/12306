@@ -1,16 +1,15 @@
 package com.train.business.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.train.business.mapper.DailyTrainMapper;
 import com.train.common.base.entity.domain.DailyTrain;
+import com.train.common.base.entity.domain.DailyTrainTicket;
 import com.train.common.base.entity.domain.Train;
-import com.train.common.base.entity.query.DailyTrainExample;
-import com.train.common.base.entity.query.DailyTrainQuery;
-import com.train.common.base.entity.query.DailyTrainStationExample;
-import com.train.common.base.entity.query.SimplePage;
+import com.train.common.base.entity.query.*;
 import com.train.common.base.entity.vo.DailyTrainVo;
 import com.train.common.base.entity.vo.PaginationResultVo;
 import com.train.common.base.service.BaseService;
@@ -297,4 +296,17 @@ public class DailyTrainServiceImpl extends BaseService implements DailyTrainServ
 
         return Result.ok();
     }
+
+    @Override
+    public int delDTrainBeforeNow(Date date) {
+        if(date == null || date.after(DateTime.now())){
+            return 0;
+        }
+        DailyTrainExample dailyTrainExample = new DailyTrainExample();
+        DailyTrainExample.Criteria criteria = dailyTrainExample.createCriteria();
+        criteria.andDateLessThan(date);
+        int count = dailyTrainMapper.deleteByExample(dailyTrainExample);
+        return count;
+    }
+
 }

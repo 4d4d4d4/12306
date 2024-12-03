@@ -39,4 +39,13 @@ public interface DailyTicketService {
     PaginationResultVo<DailyTrainTicket> selectAllByConditionWithPage(TicketQuery query);
 
     List<TrainTicketResp> queryTicketByCondition(UTrainTicketQuery query);
+
+    DailyTrainTicket selectDTrainByUniqueIndex(Date date, String trainCode, String start, String end);
+
+    void updateRecord(DailyTrainTicket dailyTrainTicket);
+
+    // 修改车票余票数量
+    void updateTicketResidueCount(String trainCode, Date date, String seatType, Integer minStartIndex, Integer maxStartIndex, Integer minEndIndex, Integer maxEndIndex);
+
+    int delDTicketBeforeNow(Date date);
 }

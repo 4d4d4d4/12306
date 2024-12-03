@@ -53,7 +53,7 @@ import java.util.List;
  * @Author cqy.
  */
 @Component
-@TaskDesc("生成三日车厢数据")
+@TaskDesc(value = "生成三日车厢数据",order = 2)
 @DisallowConcurrentExecution
 public class DailyCarriageTask implements Job {
     private static final Logger logger = LoggerFactory.getLogger(DailyCarriageTask.class);
@@ -111,5 +111,7 @@ public class DailyCarriageTask implements Job {
             time = time.offset(DateField.DAY_OF_YEAR, 1);
         }
         logger.info("生成每日车厢任务结束");
+        context.getJobDetail().getJobDataMap().put("taskResult",true);
+
     }
 }

@@ -6,6 +6,7 @@ import com.train.common.base.entity.vo.DailySeatVo;
 import com.train.common.base.entity.vo.PaginationResultVo;
 import com.train.common.resp.Result;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,4 +49,7 @@ public interface DailySeatService {
     List<DailyTrainSeat> selectDSeatByCondition(DailyTrainSeat o);
 
     List<DailyTrainSeat> selectDSeatByConditionExample(DailyTrainSeat dailyTrainSeat);
+     DailyTrainSeat selectDSeatByKey(Long id);
+
+    int delDSeatBeforeNow(Date date);
 }

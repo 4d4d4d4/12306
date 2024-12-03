@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Copyright Copyright &copy; 2024，. All rights reserved.
  * @Author cqy.
  */
-@TaskDesc("每日车票任务")
+@TaskDesc(value = "每日车票任务",order = 4)
 @DisallowConcurrentExecution
 @Component
 public class DailyTicketTask implements Job {
@@ -57,8 +57,7 @@ public class DailyTicketTask implements Job {
     private DailyTrainService dailyTrainService;
     @DubboReference(version = "1.0.0", check = false)
     private DailySeatService dailySeatService;
-    @DubboReference(version = "1.0.0", check = false)
-    private DailyCarriageService dailyCarriageService;
+
     @Autowired
     private IdStrUtils idStrUtils;
     @Value("${business.daily.train.timeCount}")
@@ -146,6 +145,8 @@ public class DailyTicketTask implements Job {
         log.info("要添加的数据是：【{}】", JSON.toJSONString(insertList.size()));
         CommonUtils.splitList(insertList).forEach((list) -> dailyTicketService.batchInsertList(list));
         log.info("车票数据初始化结束");
+        context.getJobDetail().getJobDataMap().put("taskResult",true);
+
 
     }
 

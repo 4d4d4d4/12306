@@ -29,6 +29,7 @@ import java.lang.annotation.*;
 public @interface TaskDesc {
      String value() default "";
      String desc() default "";
+     int order() default -1;
      String group() default "default";
 
 }

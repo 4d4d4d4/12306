@@ -205,6 +205,9 @@
         <if test="date != null">
           and `date` = #{date}
         </if>
+        <if test="seatType != null and seatType != ''">
+          and seat_type = #{seatType}
+        </if>
       </where>
       GROUP BY `carriage_index`, `id`, `col`, `row`
       ORDER BY `carriage_index`, `col`, `row`;

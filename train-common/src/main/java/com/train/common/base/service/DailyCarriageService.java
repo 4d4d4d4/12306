@@ -8,6 +8,7 @@ import com.train.common.base.entity.vo.DailyTrainVo;
 import com.train.common.base.entity.vo.PaginationResultVo;
 import com.train.common.resp.Result;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,4 +49,6 @@ public interface DailyCarriageService {
     Result creatDayCarriage(DailyCarriageVo vo);
 
     List<DailyTrainCarriage> selectAllCarriageByCondition(DailyTrainCarriage dailyTrainCarriage);
+
+    int delDCarriageBeforeNow(Date date);
 }

@@ -48,7 +48,7 @@ import java.util.List;
  * @Copyright Copyright &copy; 2024，. All rights reserved.
  * @Author cqy.
  */
-@TaskDesc("生成三日车座任务")
+@TaskDesc(value = "生成三日车座任务",order = 3)
 @DisallowConcurrentExecution
 @Component
 public class DailySeatTask implements Job {
@@ -111,7 +111,7 @@ public class DailySeatTask implements Job {
                         DailyTrainSeat insertSeat = new DailyTrainSeat();
                         BeanUtils.copyProperties(dailyTrainSeat, insertSeat);
                         int carriageSeatIndex = (row - 1) * colCount + col;
-                        insertSeat.setRow(String.valueOf(row));
+                        insertSeat.setRow(StringTool.formatRow(row));
                         insertSeat.setCarriageSeatIndex(carriageSeatIndex);
                         insertSeat.setId(idStrUtils.snowFlakeLong());
                         List<TrainStation> trainStations = trainStationService.getTrainStationByTrainCode(trainCode);
@@ -136,5 +136,7 @@ public class DailySeatTask implements Job {
             time = time.offset(DateField.DAY_OF_YEAR, 1);
         }
         logger.info("每日车座任务结束");
+        context.getJobDetail().getJobDataMap().put("taskResult",true);
+
     }
 }

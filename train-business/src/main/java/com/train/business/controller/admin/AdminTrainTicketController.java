@@ -48,7 +48,6 @@ public class AdminTrainTicketController {
     }
     @PostMapping("/queryTicket")
     public Result queryTicker(@RequestBody DailyTicketVo ticketVo){
-
         return Result.ok();
     }
 }

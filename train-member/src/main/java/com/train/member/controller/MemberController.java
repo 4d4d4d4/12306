@@ -152,21 +152,21 @@ public class MemberController {
             throw new BusinessException(ResultStatusEnum.CODE_505);
         }
 //     TODO      手机验证码校验目前省略掉
-//        String key = RedisEnums.MOBILE_SMS_ENUM.getPrefix() + mobile;
-//        RedisMobileSms redisMobileSms = (RedisMobileSms) redisUtils.get(key);
-//        if(redisMobileSms == null){
-//            throw new BusinessException(ResultStatusEnum.CODE_506);
-//        }
-//        String redisMobile = redisMobileSms.getMobile();
-//        // 手机号获取到的不是自己对应的缓存
-//        if(redisMobile == null || !redisMobile.equals(mobile)){
-//            redisUtils.remove(key);
-//            throw new BusinessException(ResultStatusEnum.CODE_506);
-//        }
-//        String redisMobileSmsCode = redisMobileSms.getCode();
-//        if(redisMobileSmsCode == null || !redisMobileSmsCode.equalsIgnoreCase(mobileSms)){
-//            throw new BusinessException(ResultStatusEnum.CODE_507);
-//        }
+        String key = RedisEnums.MOBILE_SMS_ENUM.getPrefix() + mobile;
+        RedisMobileSms redisMobileSms = (RedisMobileSms) redisUtils.get(key);
+        if(redisMobileSms == null){
+            throw new BusinessException(ResultStatusEnum.CODE_506);
+        }
+        String redisMobile = redisMobileSms.getMobile();
+        // 手机号获取到的不是自己对应的缓存
+        if(redisMobile == null || !redisMobile.equals(mobile)){
+            redisUtils.remove(key);
+            throw new BusinessException(ResultStatusEnum.CODE_506);
+        }
+        String redisMobileSmsCode = redisMobileSms.getCode();
+        if(redisMobileSmsCode == null || !redisMobileSmsCode.equalsIgnoreCase(mobileSms)){
+            throw new BusinessException(ResultStatusEnum.CODE_507);
+        }
 
         MemberDto result = memberService.registerOrLoginMember(mobile);
 

@@ -1,5 +1,6 @@
 package com.train.business.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
@@ -9,10 +10,7 @@ import com.train.common.base.entity.domain.DailyTrainCarriage;
 import com.train.common.base.entity.domain.DailyTrainSeat;
 import com.train.common.base.entity.domain.TrainSeat;
 import com.train.common.base.entity.domain.TrainStation;
-import com.train.common.base.entity.query.DailySeatQuery;
-import com.train.common.base.entity.query.DailyTrainExample;
-import com.train.common.base.entity.query.DailyTrainSeatExample;
-import com.train.common.base.entity.query.SimplePage;
+import com.train.common.base.entity.query.*;
 import com.train.common.base.entity.vo.DailySeatVo;
 import com.train.common.base.entity.vo.PaginationResultVo;
 import com.train.common.base.service.*;
@@ -289,6 +287,11 @@ public class DailySeatServiceImpl extends BaseService implements DailySeatServic
         });
     }
 
+    /**
+     *  默认按照
+     * @param o
+     * @return
+     */
     @Override
     public List<DailyTrainSeat> selectDSeatByCondition(DailyTrainSeat o) {
         DailyTrainSeatExample dailyTrainSeatExample = new DailyTrainSeatExample();
@@ -304,7 +307,6 @@ public class DailySeatServiceImpl extends BaseService implements DailySeatServic
                 criteria.andTrainCodeLike(StringTool.concat(o.getTrainCode()));
             }
         }
-
         return dailyTrainSeatMapper.selectByExample(dailyTrainSeatExample);
     }
 
@@ -321,6 +323,22 @@ public class DailySeatServiceImpl extends BaseService implements DailySeatServic
         }
         java.sql.Date date = new java.sql.Date(dailyTrainSeat.getDate().getTime());
         String trainCode = dailyTrainSeat.getTrainCode();
-        return dailyTrainSeatMapper.selectAllDSeatWithGroupAndOrder(trainCode, date);
+        String seatType = dailyTrainSeat.getSeatType();
+        return dailyTrainSeatMapper.selectAllDSeatWithGroupAndOrder(trainCode, date,seatType);
+    }
+    public DailyTrainSeat selectDSeatByKey(Long id){
+        return dailyTrainSeatMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public int delDSeatBeforeNow(Date date) {
+        if(date == null || date.after(DateTime.now())){
+            return 0;
+        }
+        DailyTrainSeatExample example = new DailyTrainSeatExample();
+        DailyTrainSeatExample.Criteria criteria = example.createCriteria();
+        criteria.andDateLessThan(date);
+        int count = dailyTrainSeatMapper.deleteByExample(example);
+        return count;
     }
 }

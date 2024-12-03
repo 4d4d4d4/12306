@@ -53,9 +53,11 @@ public class TrainServiceImpl implements TrainService {
         TrainExample trainExample = new TrainExample();
         trainExample.setDistinct(true);
 
+
+
         String code = trainQuery.getCode();
         if(code!=null) {
-            trainExample.or().andCodeEqualTo(TrainExample.concat(code));
+            trainExample.or().andCodeLike(TrainExample.concat(code));
         }
         String start = trainQuery.getStart();
         if(start != null) {
