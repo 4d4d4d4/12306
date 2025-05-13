@@ -23,6 +23,7 @@ public class ConfirmOrder implements Serializable {
 
     private Long dailyTrainTicketId;
 
+
     private String status;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -34,6 +35,9 @@ public class ConfirmOrder implements Serializable {
     private Date updateTime;
 
     private String tickets;
+//
+
+//    private Object tickets;
 
     public Long getId() {
         return id;
@@ -115,7 +119,7 @@ public class ConfirmOrder implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public String getTickets() {
+    public Object getTickets() {
         return tickets;
     }
 

@@ -88,6 +88,7 @@ public class SenderTencentSms {
         HttpResponse httpResponse = new HttpResponse();
         String[] templateParams = new String[params.size()];
         params.toArray(templateParams);
+        log.info("手机验证码参数:{}", params);
         req.setPhoneNumberSet(new String[]{mobile});
         req.setTemplateParamSet(templateParams);
         try {

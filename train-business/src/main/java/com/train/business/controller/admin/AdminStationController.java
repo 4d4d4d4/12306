@@ -13,9 +13,14 @@ import com.train.common.base.entity.vo.PaginationResultVo;
 import com.train.common.entity.SystemConstants;
 import com.train.common.resp.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,12 +52,13 @@ public class AdminStationController {
     private DailyStationService dailyStationService;
 
     @PostMapping("/listByCondition")
-
     public Result getStationNameList(@RequestBody StationQuery station){
         PaginationResultVo<Station> allStation = stationService.getAllStation(station);
 
         return Result.ok().data("result", allStation);
     }
+
+
 
     @PostMapping("/addStation")
     @CacheEvictByPrefix(prefix = SystemConstants.CACHE_STATION_PREFIX)

@@ -157,7 +157,7 @@ public class DailyStationServiceImpl implements DailyStationService {
                 .andIndexLessThanOrEqualTo(endIndex);
         dailyTrainStationExample.setOrderByClause("`index` asc");
         List<DailyTrainStation> dailyTrainStations = dStationMapper.selectByExample(dailyTrainStationExample);
-        log.info("根据火车编码：{}，日期：{}，开始站：{}，终点站：{}查询到的结果是{}"
+        log.info("根据火车编码：{}，日期：{}，开始站：{}，终点站：{},查询到的结果是{}"
                 , trainCode, date, startIndex, endIndex, JSON.toJSONString(dailyTrainStations));
         return dailyTrainStations;
     }

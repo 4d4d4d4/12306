@@ -124,7 +124,7 @@ public class TaskController {
         // 工作量较大的任务分组需要合理等待再返回结果
         if(group.equals("batch")){
             try {
-                future.get(35, TimeUnit.SECONDS); // 阻塞等待任务完成
+                future.get(85, TimeUnit.SECONDS); // 阻塞等待任务完成
             } catch (InterruptedException | ExecutionException  e) {
                 throw new RuntimeException(e);
             } catch (TimeoutException e) {

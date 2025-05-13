@@ -63,6 +63,7 @@ public class DailyTrainStationServiceImple implements DailyTrainStationService {
         if (query == null) {
             throw new BusinessException(ResultStatusEnum.CODE_500);
         }
+        log.info("查询的信息：{}", JSON.toJSONString(query));
         PaginationResultVo<DailyTrainStation> result = new PaginationResultVo<>();
         Integer currentPage = query.getCurrentPage();
         Integer pageSize = query.getPageSize();

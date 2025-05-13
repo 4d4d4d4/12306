@@ -33,4 +33,6 @@ public interface ConfirmOrderMapper {
     int updateByPrimaryKeyWithBLOBs(ConfirmOrder record);
 
     int updateByPrimaryKey(ConfirmOrder record);
+
+    List<ConfirmOrder> selectpassenger(Long id);
 }

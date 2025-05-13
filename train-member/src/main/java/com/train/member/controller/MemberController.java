@@ -16,20 +16,20 @@ import com.train.common.entity.CreateImageCode;
 import com.train.common.utils.IdStrUtils;
 import com.train.common.utils.RedisUtils;
 import com.train.common.utils.ThreadLocalUtils;
+import com.train.member.utils.WeatherResult;
+import com.train.member.utils.WeatherUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname MemberController
@@ -116,7 +116,7 @@ public class MemberController {
             boolean b = redisUtils.setEx(key, redisMobileSms, ttl);
             if (b) {
                 // 测试阶段不发送短信
-//                senderTencentSms.sendMobileMessage(mobile, "", params);
+                senderTencentSms.sendMobileMessage(mobile, "", params);
             }
         } else {
             // 第一次发送验证码
@@ -151,7 +151,15 @@ public class MemberController {
         if ((redisCheckCode == null) || !redisCheckCode.equalsIgnoreCase(checkCode)) {
             throw new BusinessException(ResultStatusEnum.CODE_505);
         }
-//     TODO      手机验证码校验目前省略掉
+//     TODO      由于手机短信验证码是收费的，所以非正式上线前省略掉(已完成测试)
+//        checkMobileCode(mobile, mobileSms);
+
+        MemberDto result = memberService.registerOrLoginMember(mobile);
+
+        return Result.ok().data("data", result);
+    }
+
+    private void checkMobileCode(String mobile, String mobileSms) {
         String key = RedisEnums.MOBILE_SMS_ENUM.getPrefix() + mobile;
         RedisMobileSms redisMobileSms = (RedisMobileSms) redisUtils.get(key);
         if(redisMobileSms == null){
@@ -167,10 +175,6 @@ public class MemberController {
         if(redisMobileSmsCode == null || !redisMobileSmsCode.equalsIgnoreCase(mobileSms)){
             throw new BusinessException(ResultStatusEnum.CODE_507);
         }
-
-        MemberDto result = memberService.registerOrLoginMember(mobile);
-
-        return Result.ok().data("data", result);
     }
 
     @PostMapping("/selectById")
@@ -181,5 +185,11 @@ public class MemberController {
         memberExample.createCriteria().andIdEqualTo(currentId);
         List<Member> members = memberService.selectMemberList(memberExample);
         return Result.ok().data("data", members.get(0));
+    }
+    @PostMapping("/getWeatherByCity")
+    public Result getWeatherByCity(@RequestBody Map<String,String> map){
+        String city = map.get("city");
+        Map<String, WeatherResult> weather = WeatherUtils.getWeather(city);
+        return Result.ok().data("data", weather);
     }
 }

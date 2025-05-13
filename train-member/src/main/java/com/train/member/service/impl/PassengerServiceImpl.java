@@ -98,6 +98,7 @@ public class PassengerServiceImpl implements PassengerService {
                 PageHelper.startPage(passengerListVo.getCurrentPage(), passengerListVo.getPageSize());
             }
         }
+        passengerExample.createCriteria().andMemberIdEqualTo(currentId);
         return passengerMapper.selectByExample(passengerExample);
     }
 
@@ -109,9 +110,12 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public Integer listCount(PassengerListVo passengerListVo) {
         PassengerExample passengerExample = new PassengerExample();
+        Long currentId = ThreadLocalUtils.getCurrentId();
+        if(currentId == null){
+            return 0;
+        }
         passengerExample.clear();
-        passengerExample.createCriteria().andNameLike("%" + passengerListVo.getName() + "%");
-        passengerExample.clear();
+        passengerExample.createCriteria().andNameLike("%" + passengerListVo.getName() + "%").andMemberIdEqualTo(currentId);
         return Math.toIntExact(passengerMapper.countByExample(passengerExample));
     }
 }

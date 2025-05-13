@@ -7,6 +7,7 @@ import com.train.common.base.entity.query.MemberExample;
 import com.train.common.base.entity.domain.Member;
 import com.train.common.utils.JwtUtil;
 import com.train.member.mapper.MemberMapper;
+import com.train.member.utils.WeatherUtils;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,4 +80,11 @@ public class MemberTestApplication {
 //        Claims claims = jwtUtil.parseJWT(jwt);
 
     }
+//    @Test
+//    public void test3() throws Exception{
+//        Map<String, String> weather = WeatherUtils.getWeather();
+//        System.out.println("*********************************************");
+//        System.out.println(weather);
+//        System.out.println("*********************************************");
+//    }
 }

@@ -1,5 +1,8 @@
 package com.train.business;
 
+import com.alibaba.csp.sentinel.slots.block.RuleConstant;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -10,6 +13,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -33,5 +39,18 @@ public class BusinessApplication {
         String contextPath = environment.getProperty("server.servlet.context-path");
         logger.info("会员服务启动：{}:{}{}", "http://localhost", startPort, contextPath);
 
+        initFlowRules();
+        logger.info("初始化规则.。。");
+    }
+
+    private static void initFlowRules(){
+        List<FlowRule> rules = new ArrayList<>();
+        FlowRule rule = new FlowRule();
+        rule.setResource("ticket/order/confirm");
+        rule.setGrade(RuleConstant.FLOW_GRADE_QPS);
+        // Set limit QPS to 20.
+        rule.setCount(1);
+        rules.add(rule);
+        FlowRuleManager.loadRules(rules);
     }
 }

@@ -22,6 +22,9 @@ import com.train.common.base.entity.domain.Ticket;
  * @Copyright Copyright &copy; 2024，. All rights reserved.
  * @Author cqy.
  */
+
 public interface TicketService {
     void saveRecord(Ticket ticket);
+
+    void deleteById(Long ticketId);
 }

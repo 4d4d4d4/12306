@@ -46,6 +46,9 @@ public interface DailyTicketService {
 
     // 修改车票余票数量
     void updateTicketResidueCount(String trainCode, Date date, String seatType, Integer minStartIndex, Integer maxStartIndex, Integer minEndIndex, Integer maxEndIndex);
+    void updateAddTicketResidueCount(String trainCode, Date date, String seatType, Integer minStartIndex, Integer maxStartIndex, Integer minEndIndex, Integer maxEndIndex);
 
     int delDTicketBeforeNow(Date date);
+
+    DailyTrainTicket selectById(DailyTrainTicket dailyTrainTicket);
 }

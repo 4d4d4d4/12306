@@ -1,11 +1,14 @@
 package com.train.business.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.train.common.aspect.annotation.GlobalAnnotation;
 import com.train.common.base.entity.domain.*;
 import com.train.common.base.entity.query.UTrainTicketQuery;
 import com.train.common.base.entity.req.PassengerTicketReq;
+import com.train.common.base.entity.req.RefundTicketReq;
 import com.train.common.base.entity.req.TicketOrderReq;
 import com.train.common.base.entity.resp.TrainTicketResp;
 import com.train.common.base.service.*;
@@ -114,6 +117,7 @@ public class TrainTicketController {
     }
 
     // TODO 完善数据校验
+    @SentinelResource(value = "ticket/order/confirm",blockHandler = "orderConfirmBlockHandler")
     @PostMapping("/order/confirm")
     @GlobalAnnotation(checkLogin = true)
     @GlobalTransactional(timeoutMills = 300000, name = "train-confirm-order")
@@ -145,12 +149,14 @@ public class TrainTicketController {
             Long currentId = ThreadLocalUtils.getCurrentId();
             Date now = new Date();
 
+            // orderConfirmBlockHandler();
+
             // 验证码校核
-//            String redisCode = (String) redisUtils.get(RedisEnums.CHECK_CODE_ENUM.getPrefix() + currentId + type);
-//            if (!imageCode.equals(redisCode)) {
-//                log.info("校验码校核失败，存储的校验码是：【{}】， 接受的校验码是：【{}】", redisCode, imageCode);
-//                throw new BusinessException(ResultStatusEnum.CODE_505);
-//            }
+            String redisCode = (String) redisUtils.get(RedisEnums.CHECK_CODE_ENUM.getPrefix() + currentId + type);
+            if (!imageCode.equals(redisCode)) {
+                log.info("校验码校核失败，存储的校验码是：【{}】， 接受的校验码是：【{}】", redisCode, imageCode);
+                throw new BusinessException(ResultStatusEnum.CODE_505);
+            }
             DailyTrainTicket dailyTrainTicket = dailyTicketService.selectDTrainByUniqueIndex(date, trainCode, start, end);
             log.info("车票源数据;根据唯一键查找出来的数据：【{}】", JSON.toJSONString(dailyTrainTicket));
             String resultErrorMessage = ""; // 失败返回信息
@@ -177,41 +183,59 @@ public class TrainTicketController {
                 List<PassengerOrderInformation> infos = new ArrayList<>(); // 构造各个乘客相对位置列表
                 for (PassengerTicketReq ticket : tickets) {
                     PassengerOrderInformation passengerOrderInformation = new PassengerOrderInformation();
-                    String seat = ticket.getSeat();
-                    String seatTypeCode = ticket.getSeatTypeCode();
+                    String seat = ticket.getSeat(); // D1
+                    String seatTypeCode = ticket.getSeatTypeCode(); // 2
                     SeatTypeEnum seatTypeEnumByCode = SeatTypeEnum.getSeatTypeEnumByCode(seatTypeCode);
                     if (seatTypeEnumByCode == null) {
-                        log.error("根据座位类型编码:【{}】，查询到的座位类型枚举为null", seatTypeCode);
-                        throw new BusinessException(ResultStatusEnum.CODE_500);
-                    }
-                    switch (seatTypeEnumByCode) {
-                        case YDZ -> {
-                            Integer ydz = dailyTrainTicket.getYdz();
-                            if (ydz < 1) {
-                                throw new BusinessException(ResultStatusEnum.CODE_510.getCode(), "一等票余票不足");
-                            }
-                            dailyTrainTicket.setYdz(ydz - 1);
+//                        log.error("根据座位类型编码:【{}】，查询到的座位类型枚举为null", seatTypeCode);
+//                        throw new BusinessException(ResultStatusEnum.CODE_500);
+                        // 尝试每种座位类型
+                        if (dailyTrainTicket.getYdz() != null && dailyTrainTicket.getYdz() > 0) {
+                            dailyTrainTicket.setYdz(dailyTrainTicket.getYdz() - 1);
+                            seatTypeCode = SeatTypeEnum.YDZ.getCode();
+                        } else if (dailyTrainTicket.getEdz() != null && dailyTrainTicket.getEdz() > 0) {
+                            dailyTrainTicket.setEdz(dailyTrainTicket.getEdz() - 1);
+                            seatTypeCode = SeatTypeEnum.EDZ.getCode();
+                        } else if (dailyTrainTicket.getRw() != null && dailyTrainTicket.getRw() > 0) {
+                            dailyTrainTicket.setRw(dailyTrainTicket.getRw() - 1);
+                            seatTypeCode = SeatTypeEnum.RWZ.getCode();
+                        } else if (dailyTrainTicket.getYw() != null && dailyTrainTicket.getYw() > 0) {
+                            dailyTrainTicket.setYw(dailyTrainTicket.getYw() - 1);
+                            seatTypeCode = SeatTypeEnum.YWZ.getCode();
+                        } else {
+                            throw new BusinessException(ResultStatusEnum.CODE_510.getCode(), "全部座位类型余票不足");
                         }
-                        case EDZ -> {
-                            Integer edz = dailyTrainTicket.getEdz();
-                            if (edz < 1) {
-                                throw new BusinessException(ResultStatusEnum.CODE_510.getCode(), "二等票余票不足");
+                        if( oneSeatType == null || oneSeatType.isEmpty()) oneSeatType = seatTypeCode;
+                    }else {
+                        switch (seatTypeEnumByCode) {
+                            case YDZ -> {
+                                Integer ydz = dailyTrainTicket.getYdz();
+                                if (ydz < 1) {
+                                    throw new BusinessException(ResultStatusEnum.CODE_510.getCode(), "一等票余票不足");
+                                }
+                                dailyTrainTicket.setYdz(ydz - 1);
                             }
-                            dailyTrainTicket.setEdz(edz - 1);
-                        }
-                        case RWZ -> {
-                            Integer rw = dailyTrainTicket.getRw();
-                            if (rw < 1) {
-                                throw new BusinessException(ResultStatusEnum.CODE_510.getCode(), "软卧余票不足");
+                            case EDZ -> {
+                                Integer edz = dailyTrainTicket.getEdz();
+                                if (edz < 1) {
+                                    throw new BusinessException(ResultStatusEnum.CODE_510.getCode(), "二等票余票不足");
+                                }
+                                dailyTrainTicket.setEdz(edz - 1);
                             }
-                            dailyTrainTicket.setYdz(rw - 1);
-                        }
-                        case YWZ -> {
-                            Integer yw = dailyTrainTicket.getYw();
-                            if (yw < 1) {
-                                throw new BusinessException(ResultStatusEnum.CODE_510.getCode(), "硬卧余票不足");
+                            case RWZ -> {
+                                Integer rw = dailyTrainTicket.getRw();
+                                if (rw < 1) {
+                                    throw new BusinessException(ResultStatusEnum.CODE_510.getCode(), "软卧余票不足");
+                                }
+                                dailyTrainTicket.setYdz(rw - 1);
                             }
-                            dailyTrainTicket.setYdz(yw - 1);
+                            case YWZ -> {
+                                Integer yw = dailyTrainTicket.getYw();
+                                if (yw < 1) {
+                                    throw new BusinessException(ResultStatusEnum.CODE_510.getCode(), "硬卧余票不足");
+                                }
+                                dailyTrainTicket.setYdz(yw - 1);
+                            }
                         }
                     }
                     if (isChooseSeat && seat != null) {
@@ -256,7 +280,8 @@ public class TrainTicketController {
                     log.info("进入选座逻辑");
                     // 根据车厢分组（选座必须是同一车厢内）
                     Integer selectResult = 0;
-                    Map<Integer, List<DailyTrainSeat>> seatByCarriageIndexMaps = dailyTrainSeats.stream().filter((item) -> item.getSeatType().equals(oneSeatType)).collect(Collectors.groupingBy(DailyTrainSeat::getCarriageIndex));
+                    final String oneSeatTypeFinal = oneSeatType;
+                    Map<Integer, List<DailyTrainSeat>> seatByCarriageIndexMaps = dailyTrainSeats.stream().filter((item) -> item.getSeatType().equals(oneSeatTypeFinal)).collect(Collectors.groupingBy(DailyTrainSeat::getCarriageIndex));
                     for (Map.Entry<Integer, List<DailyTrainSeat>> entry : seatByCarriageIndexMaps.entrySet()) {
                         ArrayList<Long> selectedSeats = new ArrayList<>();
                         List<DailyTrainSeat> seatList = entry.getValue();
@@ -284,8 +309,9 @@ public class TrainTicketController {
                     Long seatId = info.getSeatId();
                     DailyTrainSeat seat = dailySeatService.selectDSeatByKey(seatId);
                     String sell = seat.getSell();
-                    // TODO 其实可以使用过或运算，但由于有补零的操作感觉容易出现错误故而使用效率稍微低一些的字符串操作
                     String newSell = StringTool.replaceSubstring(sell, startStationIndex - 1, endStationIndex - 1, '1');
+                    // TODO 其实可以使用过或运算，但由于有补零的操作感觉容易出现错误故而使用效率稍微低一些的字符串操作
+                    // String affectSell = StringTool.getTicketBinary(startStationIndex, endStationIndex, sell.length());
                     // 已知newSell = sell | affectSell 则 affectSell = newSell & ~sell 需要注意的是需要前面补零
                     // 由公式计算不会出错
                     String affectSell = Integer.toBinaryString(Integer.parseInt(newSell, 2) & (~Integer.parseInt(sell, 2)));
@@ -343,9 +369,10 @@ public class TrainTicketController {
                     ticket.setUpdateTime(now);
                     ticketService.saveRecord(ticket);
                 }
-
             } catch (BusinessException be) {
-                if (be.getResultStatusEnum().equals(ResultStatusEnum.CODE_510)) {
+                log.error("业务异常：{}", JSON.toJSONString(be));
+                be.fillInStackTrace();
+                if (be.getCode() != null && be.getCode().equals(ResultStatusEnum.CODE_510.getCode())) {
                     log.info("订单order:【{}】无票，更新订单表", JSON.toJSONString(order));
                     order.setStatus(ConfirmOrderStatusEnum.EMPTY.getCode());
                     resultErrorMessage = "购票失败,当前所购车票已售罄";
@@ -369,6 +396,7 @@ public class TrainTicketController {
             String l = redisTemplate.opsForValue().get(lock_key);
             // 只删除自己的锁
             if (threadID.equals(l)) {
+                log.info("释放自己的锁。。。");
                 redisTemplate.delete(lock_key);
             }
         }
@@ -625,12 +653,25 @@ public class TrainTicketController {
         List<DailyTrainSeat> temp = new ArrayList<>(dailyTrainSeats);
         for (PassengerOrderInformation info : infos) {
             // 根据座位类型和座位码选择
-            Optional<DailyTrainSeat> any = temp.stream().filter((item) -> item.getCol().equals(info.getSeatCode()) && item.getSeatType().equals(info.getSeatType())).findAny();
+            Optional<DailyTrainSeat> any = temp.stream()
+                    .filter(item -> {
+                        boolean match = true;
+                        if (info.getSeatCode() != null && !info.getSeatCode().isEmpty()) {
+                            match = match && info.getSeatCode().equals(item.getCol());
+                        }
+                        if (info.getSeatType() != null && !info.getSeatType().isEmpty()) {
+                            match = match && info.getSeatType().equals(item.getSeatType());
+                        }
+                        return match;
+                    })
+                    .findAny();
             if (any.isPresent()) {
                 DailyTrainSeat dailyTrainSeat = any.get();
                 info.setSeatId(dailyTrainSeat.getId());
                 info.setCarriageIndex(dailyTrainSeat.getCarriageIndex());
                 info.setRow(dailyTrainSeat.getRow());
+                info.setSeatCode(dailyTrainSeat.getCol());
+                info.setSeatType(dailyTrainSeat.getSeatType());
                 info.setCarriageSeatIndex(dailyTrainSeat.getCarriageSeatIndex());
                 temp.remove(dailyTrainSeat); // 防止选重复
             } else {
@@ -719,5 +760,92 @@ public class TrainTicketController {
                 return chooseSeatForEveryOne(infos, seats, index - 1, seatIndex, selectedSeats);
             }
         }
+    }
+
+    @PostMapping("refundTicket")
+    @GlobalAnnotation(checkLogin = true)
+    public Result refundTicket(@RequestBody RefundTicketReq req) {
+        Long ticketId = req.getTicketId();
+        Long seatId = req.getSeatId();
+        Long passengerId = req.getPassengerId();
+        Long orderId = req.getOrderId();
+
+        // 1. 查询车票信息
+        DailyTrainTicket dailyTrainTicket = new DailyTrainTicket();
+        dailyTrainTicket.setId(ticketId);
+        DailyTrainTicket ticket = dailyTicketService.selectById(dailyTrainTicket);
+        if (ticket == null) {
+            log.warn("退票失败，未找到车票ID: {}", ticketId);
+            return Result.error().message("车票不存在");
+        }
+
+        String trainCode = ticket.getTrainCode();
+        Date date = ticket.getDate();
+        Integer startStationIndex = dailyStationService.selectIndexByNameQuery(trainCode,date,ticket.getStart());
+        Integer endStationIndex = dailyStationService.selectIndexByNameQuery(trainCode,date,ticket.getEnd());
+
+        // 2. 查询座位信息
+
+        DailyTrainSeat seat = dailySeatService.selectDSeatByKey(seatId);
+        String sell = seat.getSell();
+        String seatType = seat.getSeatType();
+
+        // 3. 更新售卖图（将已售位置改回 '0'）
+        String newSell = StringTool.replaceSubstring(sell, startStationIndex - 1, endStationIndex - 1, '0');
+        seat.setSell(newSell);
+        seat.setUpdateTime(new Date());
+        dailySeatService.updateDSeat(seat);
+
+        // 4. 计算影响的车票区间
+        Integer minStartIndex = 0;
+        for (int t = startStationIndex - 2; t >= 0; t--) {
+            if (newSell.charAt(t) == '1') {
+                minStartIndex = t + 1;
+                break;
+            }
+        }
+        Integer maxStartIndex = startStationIndex;
+        Integer minEndIndex = endStationIndex;
+        Integer maxEndIndex = newSell.length();
+        for (int t = endStationIndex - 1; t < newSell.length(); t++) {
+            if (newSell.charAt(t) == '1') {
+                maxEndIndex = t;
+                break;
+            }
+        }
+        maxEndIndex = maxEndIndex + 1;
+        minStartIndex = minStartIndex + 1;
+
+        log.info("影响站点的区间: 初始站{}-{}，终点站{}-{}", minStartIndex, maxStartIndex, minEndIndex, maxEndIndex);
+
+        // 5. 更新车票余量
+        dailyTicketService.updateAddTicketResidueCount(trainCode, date, seatType, minStartIndex, maxStartIndex, minEndIndex, maxEndIndex);
+
+        // 6. 删除车票记录
+        ticketService.deleteById(ticketId);
+        ConfirmOrder confirmOrder = orderConfirmService.selectOrderById(orderId);
+        if (confirmOrder == null){
+            return Result.error().message("订单信息异常");
+        }
+        List<PassengerOrderInformation> infos = JSON.parseArray((String)confirmOrder.getTickets(), PassengerOrderInformation.class);
+        String status = confirmOrder.getStatus();
+        if(ConfirmOrderStatusEnum.SUCCESS.getCode().equals(status)){
+            List<PassengerOrderInformation> updatedInfos = infos.stream()
+                    .filter(info -> !(info.getSeatId().equals(seatId) && info.getPassengerId().equals(passengerId)))
+                    .collect(Collectors.toList());
+            confirmOrder.setTickets(JSON.toJSONString(updatedInfos));
+            orderConfirmService.updateRecord(confirmOrder);
+        }else {
+
+        }
+        log.info("退票成功, 车票ID: {}", ticketId);
+        return Result.ok();
+    }
+
+
+    // 熔断方法
+    public Result orderConfirmBlockHandler(TicketOrderReq req, BlockException e){
+        log.info("当前抢票人数过多...");
+        throw new BusinessException(ResultStatusEnum.CODE_511);
     }
 }

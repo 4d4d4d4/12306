@@ -39,4 +39,5 @@ public interface DailyTrainTicketMapper {
     List<DailyTrainTicket> queryTicketByCondition(@Param("q") UTrainTicketQuery query);
 
     void updateTicketResidueCount(@Param("trainCode") String trainCode, @Param("date") Date date, @Param("seatType") String seatType, @Param("minStartIndex") Integer minStartIndex, @Param("maxStartIndex") Integer maxStartIndex, @Param("minEndIndex") Integer minEndIndex, @Param("maxEndIndex") Integer maxEndIndex);
+    void updateAddTicketResidueCount(@Param("trainCode") String trainCode, @Param("date") Date date, @Param("seatType") String seatType, @Param("minStartIndex") Integer minStartIndex, @Param("maxStartIndex") Integer maxStartIndex, @Param("minEndIndex") Integer minEndIndex, @Param("maxEndIndex") Integer maxEndIndex);
 }

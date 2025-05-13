@@ -9,6 +9,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * <dl>
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @Copyright Copyright &copy; 2024，. All rights reserved.
  * @Author cqy.
  */
+@Service
 @DubboService(version = "1.0.0",token = "true")
 public class TicketServiceImpl implements TicketService {
     private static final Logger log = LoggerFactory.getLogger(TicketServiceImpl.class);
@@ -41,5 +43,10 @@ public class TicketServiceImpl implements TicketService {
     public void saveRecord(Ticket ticket) {
         log.info("插入车票数据：{}", JSON.toJSONString(ticket));
         ticketMapper.insert(ticket);
+    }
+
+    @Override
+    public void deleteById(Long ticketId) {
+        ticketMapper.deleteByPrimaryKey(ticketId);
     }
 }

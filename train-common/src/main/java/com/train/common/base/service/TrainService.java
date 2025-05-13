@@ -39,4 +39,6 @@ public interface TrainService {
 
     // 根据火车编码模糊查询获取火车列表
     List<Train> selectTrainsByCode(String trainCode);
+
+    void insert(Train train);
 }

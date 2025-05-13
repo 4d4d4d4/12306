@@ -2,6 +2,7 @@ package com.train.business.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -133,13 +134,44 @@ public class DailyTicketServiceImpl implements DailyTicketService {
             return List.of();
         }
         Date destinationDate = query.getDestinationDate();
-        if(query.getTickFormModel() == 1 && destinationDate == null){
+        if(query.getTickFormModel() == null){
+            query.setTickFormModel(0);
+        }
+        if(( query.getTickFormModel() == 1) && destinationDate == null){
             log.error("查询条件中缺少到达时间条件，查询失败");
             return List.of();
         }
         Integer tickFormModel = query.getTickFormModel();
         List<DailyTrainTicket> dailyTrainTickets = dailyTrainTicketMapper.queryTicketByCondition(query);
-        return  consolidatedTicket(dailyTrainTickets, tickFormModel);
+        log.info("查询到的票信息是：{}",JSON.toJSONString(dailyTrainTickets));
+        List<TrainTicketResp> returnResult = new ArrayList<>();
+
+        // 构造一个单程票集合
+        for (DailyTrainTicket item : dailyTrainTickets) {
+            TrainTicketResp trainTicketResp = new TrainTicketResp();
+            BeanUtils.copyProperties(item, trainTicketResp);
+            fillStationIndex(item, trainTicketResp);
+            returnResult.add(trainTicketResp);
+        }
+
+        if(tickFormModel == 1){
+            HashMap<String, TrainTicketResp> map = new HashMap<>();
+            // 遍历票 此时拿到的票当作返程票
+            returnResult.forEach((item) ->{
+                        map.put(item.getStartPinyin() + "_" + item.getEndPinyin(), item);
+                        map.put(item.getStart() + "_" + item.getEnd(), item);
+                    }
+                   );
+            String fStart = query.getDestination();
+            String fEnd = query.getDeparture();
+            TrainTicketResp trainTicketResp = map.get(fStart + "_" + fEnd); // 反程票
+            TrainTicketResp trainTicketResp2 = map.get(fEnd + "_" + fStart); // 开始票
+            trainTicketResp2.setGoBack(trainTicketResp);
+            trainTicketResp2.setIsOneWay(false);
+            returnResult.remove(trainTicketResp);
+        }
+
+        return  returnResult;
     }
 
      @Override
@@ -153,6 +185,10 @@ public class DailyTicketServiceImpl implements DailyTicketService {
         DailyTrainTicketExample.Criteria criteria = dailyTrainTicketExample.createCriteria();
         criteria.andDateEqualTo(date).andTrainCodeEqualTo(trainCode).andStartEqualTo(start).andEndEqualTo(end);
          List<DailyTrainTicket> dailyTrainTickets = dailyTrainTicketMapper.selectByExample(dailyTrainTicketExample);
+         if(dailyTrainTickets.isEmpty()){
+             log.info("没有查到唯一数据....");
+             return null;
+         }
          if(dailyTrainTickets.size() != 1){
              log.info("根据唯一键查找出多个数据！：【{}】", JSON.toJSONString(dailyTrainTickets));
          }
@@ -169,6 +205,11 @@ public class DailyTicketServiceImpl implements DailyTicketService {
         log.info("批量修改车票余量：【{}、{}、{}】",trainCode,date,seatType);
         dailyTrainTicketMapper.updateTicketResidueCount(trainCode,date,seatType,minStartIndex,maxStartIndex,minEndIndex,maxEndIndex);
     }
+    @Override
+    public void updateAddTicketResidueCount(String trainCode, Date date, String seatType, Integer minStartIndex, Integer maxStartIndex, Integer minEndIndex, Integer maxEndIndex) {
+        log.info("批量修改车票余量：【{}、{}、{}】",trainCode,date,seatType);
+        dailyTrainTicketMapper.updateAddTicketResidueCount(trainCode,date,seatType,minStartIndex,maxStartIndex,minEndIndex,maxEndIndex);
+    }
 
     @Override
     public int delDTicketBeforeNow(Date date) {
@@ -180,6 +221,11 @@ public class DailyTicketServiceImpl implements DailyTicketService {
         criteria.andDateLessThan(date);
         int count = dailyTrainTicketMapper.deleteByExample(example);
         return count;
+    }
+
+    @Override
+    public DailyTrainTicket selectById(DailyTrainTicket dailyTrainTicket) {
+        return dailyTrainTicketMapper.selectByPrimaryKey(dailyTrainTicket.getId());
     }
 
     /**
@@ -208,18 +254,19 @@ public class DailyTicketServiceImpl implements DailyTicketService {
             returnResult.forEach((item) ->
                     map.put(item.getStart() + "_" + item.getEnd(), item));
             List<TrainTicketResp> tempList = new ArrayList<>(returnResult);
+            List<TrainTicketResp> tempList2 = new ArrayList<>();
             for (TrainTicketResp trainTicketResp : returnResult) {
-                String key = trainTicketResp.getEnd() + "_" + trainTicketResp.getStart();
+                String key = trainTicketResp.getEnd() + "_" + trainTicketResp.getStart(); // 北京-> 上海
                 // 尝试获取当前的单程票
-                TrainTicketResp t = map.get(key);
+                TrainTicketResp t = map.get(key); // 北京-> 上海
                 // 获取到前往票，则当前的票加入获取票的返程票中并在临时集合中删除
                 if(t != null){
-                    t.setGoBack(trainTicketResp);
+                    t.setGoBack(trainTicketResp); // 上海->北京
                     t.setIsOneWay(false);
-                    tempList.remove(trainTicketResp);
                 }
+                tempList.remove(trainTicketResp);
             }
-            returnResult = tempList;
+//            returnResult = tempList;
         }
 
         return returnResult;

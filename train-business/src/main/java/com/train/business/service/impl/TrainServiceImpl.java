@@ -132,4 +132,9 @@ public class TrainServiceImpl implements TrainService {
         trainExample.or().andCodeLike(StringTool.concat(trainCode));
         return trainMapper.selectByExample(trainExample);
     }
+
+    @Override
+    public void insert(Train train) {
+        trainMapper.insert(train);
+    }
 }

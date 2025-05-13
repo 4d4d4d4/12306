@@ -2,11 +2,18 @@ package com.train.business.service.impl;
 
 import com.train.business.mapper.ConfirmOrderMapper;
 import com.train.common.base.entity.domain.ConfirmOrder;
+import com.train.common.base.entity.domain.Member;
+import com.train.common.base.entity.query.ConfirmOrderExample;
 import com.train.common.base.service.OrderConfirmService;
+import com.train.common.enums.ConfirmOrderStatusEnum;
+import com.train.common.utils.ThreadLocalUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * <dl>
@@ -42,5 +49,27 @@ public class OrderConfirmServiceImpl implements OrderConfirmService {
     public void updateRecord(ConfirmOrder order) {
         log.info("更新表单数据：{}", order);
         confirmOrderMapper.updateByPrimaryKeySelective(order);
+    }
+
+    @Override
+    public List<ConfirmOrder> selectOrders(Member member) {
+        ConfirmOrderExample example = new ConfirmOrderExample();
+        example.createCriteria().andMemberIdEqualTo(member.getId());
+        log.info("接收到的数据：{}",  confirmOrderMapper.selectpassenger(member.getId()));
+        return  confirmOrderMapper.selectpassenger(member.getId());
+    }
+
+    @Override
+    public ConfirmOrder selectOrderById(Long ticketId) {
+        return confirmOrderMapper.selectByPrimaryKey(ticketId);
+    }
+
+    @Override
+    public List<ConfirmOrder> selectOrders() {
+        ConfirmOrderExample example = new ConfirmOrderExample();
+        ConfirmOrderExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(ConfirmOrderStatusEnum.SUCCESS.getCode());
+        List<ConfirmOrder> confirmOrders = confirmOrderMapper.selectByExample(example);
+        return confirmOrders;
     }
 }

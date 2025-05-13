@@ -99,10 +99,10 @@
   </select>
   <select id="selectByExample" parameterType="com.train.common.base.entity.query.ConfirmOrderExample" resultMap="BaseResultMap">
     select
-    <if test="distinct">
-      distinct
-    </if>
-    <include refid="Base_Column_List" />
+    id, member_id, `date`,
+    train_code, `start`, `end`,
+    daily_train_ticket_id, `status`, create_time,
+    update_time,JSON_UNQUOTE(tickets) AS tickets
     from confirm_order
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -218,7 +218,16 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="selectpassenger" resultType="com.train.common.base.entity.domain.ConfirmOrder">
+        SELECT id, member_id as memberId, `date`,
+               train_code as trainCode, `start`, `end`,
+               daily_train_ticket_id as dailyTrainTicketId, `status`, create_time as createTime,
+               update_time as updateTime,JSON_UNQUOTE(tickets) AS tickets
+        FROM confirm_order
+        where member_id = #{id}
+
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update confirm_order
     <set>
       <if test="record.id != null">

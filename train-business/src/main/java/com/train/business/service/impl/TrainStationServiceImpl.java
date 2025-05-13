@@ -114,5 +114,20 @@ public class TrainStationServiceImpl implements TrainStationService {
         return trainStationMapper.selectByExample(trainStationExample);
     }
 
+    @Override
+    public Integer insertOne(TrainStation trainStation) {
+        return trainStationMapper.insertSelective(trainStation);
+    }
+
+    @Override
+    public Integer insertAll(List<TrainStation> list) {
+        int count = 0;
+        for (TrainStation trainStation : list) {
+            int i = trainStationMapper.insertSelective(trainStation);
+            count = count + i;
+        }
+        return count;
+    }
+
 
 }

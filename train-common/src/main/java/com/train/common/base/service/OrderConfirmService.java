@@ -1,6 +1,9 @@
 package com.train.common.base.service;
 
 import com.train.common.base.entity.domain.ConfirmOrder;
+import com.train.common.base.entity.domain.Member;
+
+import java.util.List;
 
 /**
  * <dl>
@@ -22,8 +25,15 @@ import com.train.common.base.entity.domain.ConfirmOrder;
  * @Copyright Copyright &copy; 2024，. All rights reserved.
  * @Author cqy.
  */
+
 public interface OrderConfirmService {
     int insertRecord(ConfirmOrder order);
 
     void updateRecord(ConfirmOrder order);
+
+    List<ConfirmOrder> selectOrders(Member member);
+
+    ConfirmOrder selectOrderById(Long ticketId);
+
+    List<ConfirmOrder> selectOrders();
 }

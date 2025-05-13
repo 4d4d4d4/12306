@@ -180,7 +180,20 @@ public class StringTool {
         String s = "000";
         int start = 2;
         int end = 3;
-        System.out.println(replaceSubstring(s, start - 1, end - 1, '1'));
+        System.out.println(getTicketBinary(3,4,3));
     }
+
+    public static String getTicketBinary(int startIndex, int endIndex, int totalStations) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= totalStations; i++) {
+            if (i >= startIndex && i < endIndex) {
+                sb.append('1');
+            } else {
+                sb.append('0');
+            }
+        }
+        return sb.toString();
+    }
+
 
 }

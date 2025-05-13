@@ -5,7 +5,7 @@ server:
 logging:
   level:
     root: info
-#    com.train.business.mapper: trace
+    com.train.business.mapper: trace
 spring:
   config:
     import: optional:classpath:/application-common.properties
@@ -49,3 +49,7 @@ dubbo:
     port: -1
   registry:
     address: nacos://192.168.40.1:8848
+csp:
+  sentinel:
+    dashboard:
+      server: 127.0.0.1:8080

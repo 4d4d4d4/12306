@@ -36,4 +36,7 @@ public interface TrainStationService {
     PaginationResultVo<TrainStation> getStationByCondition(TrainStationQuery query);
 
     List<TrainStation> selectAllTStationByCondition(TrainStation ts);
+
+    Integer insertOne(TrainStation trainStation);
+    Integer insertAll(List<TrainStation> list);
 }

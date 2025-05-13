@@ -67,6 +67,7 @@ public class DailyTrainServiceImpl extends BaseService implements DailyTrainServ
 
     @Override
     public PaginationResultVo<DailyTrain> getAllDTrainByConditionWithPage(DailyTrainQuery trainQuery) {
+        log.info("每日火车查询条件：{}", JSON.toJSONString(trainQuery));
         PaginationResultVo<DailyTrain> resultVo = new PaginationResultVo<>();
         // 分页条件
         Integer currentPage = trainQuery.getCurrentPage();
@@ -83,6 +84,8 @@ public class DailyTrainServiceImpl extends BaseService implements DailyTrainServ
         DailyTrainExample.Criteria criteria = dailyTrainExample.createCriteria();
         if(code != null){
             criteria.andCodeLike(StringTool.concat(code));
+            dailyTrainExample.or().andStartLike(StringTool.concat(code));
+            dailyTrainExample.or().andEndLike(StringTool.concat(code));
         }
         if(date!=null){
             criteria.andDateEqualTo(date);

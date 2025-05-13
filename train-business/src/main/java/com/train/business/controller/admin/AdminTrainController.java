@@ -1,21 +1,19 @@
 package com.train.business.controller.admin;
 
 import com.train.common.base.entity.domain.DailyTrain;
-import com.train.common.base.entity.domain.Station;
 import com.train.common.base.entity.domain.Train;
 import com.train.common.base.entity.query.DailyTrainQuery;
 import com.train.common.base.entity.query.TrainQuery;
 import com.train.common.base.entity.vo.DailyTrainVo;
 import com.train.common.base.entity.vo.PaginationResultVo;
-import com.train.common.base.entity.vo.StationVo;
 import com.train.common.base.entity.vo.TrainVo;
 import com.train.common.base.service.DailyTrainService;
 import com.train.common.base.service.TrainService;
 import com.train.common.resp.Result;
+import com.train.common.utils.IdStrUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,6 +43,7 @@ public class AdminTrainController {
     private TrainService trainService;
     @DubboReference(version = "1.0.0", check = false)
     private DailyTrainService dailyTrainService;
+
 
     @RequestMapping("listByCondition")
     public Result listByCondition(@RequestBody TrainQuery trainQuery){
